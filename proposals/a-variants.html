@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案A 地の表現3案</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{--bg:#F4F6F5;--card:#fff;--ink:#14213D;--sub:#5A6474;--acc:#1688D4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7}
+[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-.12em}
+main{max-width:1240px;margin:0 auto;padding:40px 16px 72px}
+h1{margin:0;font-size:26px}
+.meta{margin:4px 0 28px;color:var(--sub);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px}
+a.card{display:flex;flex-direction:column;background:var(--card);border-radius:18px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 2px 12px rgba(0,0,0,.05);transition:transform .15s}
+a.card:hover{transform:translateY(-3px)}
+.shots{position:relative;background:#DDE3E8}
+.shots .pc{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
+.shots .sp{position:absolute;right:10px;bottom:-30px;width:24%;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:10px;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.body{padding:16px 18px 20px}
+.name{display:flex;align-items:center;gap:8px;font-weight:900;font-size:19px;padding-right:26%}
+.name .n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;font-size:14px;flex:none}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tags span{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--bg)}
+.open{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:14px;font-weight:700;color:var(--acc)}
+.note{margin-top:28px;font-size:13px;color:var(--sub)}
+</style>
+</head>
+<body>
+<main>
+  <h1>案A 地の表現 3案</h1>
+  <p class="meta">骨格（中央の筆文字ロゴ・日付カード・申し込みボタン・2026の写真・浮かぶ静岡のイラスト）は共通。地の表現と写真の切り抜き方だけを変えています。</p>
+  <div class="grid">
+    <a class="card" href="a-chart.html">
+      <div class="shots"><img class="pc" src="img/variants/shots/a-chart-pc.jpg" alt="海図案のPC表示"><img class="sp" src="img/variants/shots/a-chart-sp.jpg" alt="海図案のスマホ表示"></div>
+      <div class="body">
+        <div class="name"><span class="n">1</span>海図</div>
+        <div class="tags"><span><i data-lucide="waves"></i>駿河湾の等深線</span><span><i data-lucide="circle"></i>丸窓の写真</span><span><i data-lucide="compass"></i>方位磁針と航路</span><span><i data-lucide="palette"></i>紺＋生成り</span></div>
+        <span class="open">開く<i data-lucide="arrow-right"></i></span>
+      </div>
+    </a>
+    <a class="card" href="a-hanga.html">
+      <div class="shots"><img class="pc" src="img/variants/shots/a-hanga-pc.jpg" alt="版画案のPC表示"><img class="sp" src="img/variants/shots/a-hanga-sp.jpg" alt="版画案のスマホ表示"></div>
+      <div class="body">
+        <div class="name"><span class="n">2</span>版画</div>
+        <div class="tags"><span><i data-lucide="mountain-snow"></i>富士と駿河湾の木版画</span><span><i data-lucide="fan"></i>扇面の写真</span><span><i data-lucide="brush"></i>筆文字と好相性</span><span><i data-lucide="palette"></i>藍＋朱＋生成り</span></div>
+        <span class="open">開く<i data-lucide="arrow-right"></i></span>
+      </div>
+    </a>
+    <a class="card" href="a-tairyo.html">
+      <div class="shots"><img class="pc" src="img/variants/shots/a-tairyo-pc.jpg" alt="大漁旗案のPC表示"><img class="sp" src="img/variants/shots/a-tairyo-sp.jpg" alt="大漁旗案のスマホ表示"></div>
+      <div class="body">
+        <div class="name"><span class="n">3</span>大漁旗</div>
+        <div class="tags"><span><i data-lucide="fish"></i>波・富士・アジ・鶴</span><span><i data-lucide="square"></i>太い縁取りの写真</span><span><i data-lucide="zap"></i>いちばん賑やか</span><span><i data-lucide="palette"></i>藍＋黄＋原色</span></div>
+        <span class="open">開く<i data-lucide="arrow-right"></i></span>
+      </div>
+    </a>
+  </div>
+  <p class="note">背景の版画・大漁旗は nano banana（gemini-3.1-flash-image）で生成。大漁旗は旭日旗と同じ図柄になる旭光（放射線）を使っていません。</p>
+</main>
+<script>lucide.createIcons();</script>
+</body>
+</html>

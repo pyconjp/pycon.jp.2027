@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyCon JP 2027 案A Kinetic Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --bg:#F2F9F7; --ink:#0E1E5B; --ink-2:#3B4A7A; --line:#D7E6E3; --card:#FFFFFF;
+  --g1:#1C35B8; --g2:#1688D4; --g3:#13B39C; --g4:#86C440;
+  --grad:linear-gradient(100deg,var(--g1) 0%,var(--g2) 35%,var(--g3) 70%,var(--g4) 100%);
+  --cta:#FF4F00;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.num{font-family:"Outfit",sans-serif}
+[data-lucide]{width:1em;height:1em;stroke-width:2}
+
+/* header: YAPC 風に白い角丸のバーへ */
+.hd{position:absolute;inset:0 0 auto;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px clamp(16px,3vw,28px);background:#fff;border-radius:0 0 24px 24px}
+.logo{display:block;line-height:0}
+.logo img{display:block;width:auto;height:30px}
+.hd-cta{display:inline-flex;align-items:center;gap:8px;background:var(--cta);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:10px 18px;border-radius:999px}
+
+/* hero: 切り絵の色面と、不定形に切り抜いた2026の写真を散らし、中央の白い円にロゴを置く */
+.hero{--paper:#E3E8E7;--mikan:#EE7A1A;--tea:#2E9150;--bay:#1F5FBF;--kinu:#E6A52A;--ebi:#E46F8B;--fuji:#25407F;
+  position:relative;min-height:max(100svh,760px);background:var(--paper);overflow:hidden;isolation:isolate}
+.stage{position:absolute;inset:64px 0 0;max-width:1280px;margin:0 auto}
+.stage > *{position:absolute}
+/* 切り絵: 色面の内側に白い点線のステッチ */
+.cut{background:var(--c)}
+.cut::after{content:"";position:absolute;inset:8px;border:2px dashed rgba(255,255,255,.85);border-radius:inherit}
+.cut svg{display:block;width:100%;height:100%;overflow:visible}
+.squig path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.squig .base{stroke:var(--c);stroke-width:34}
+.squig .stitch{stroke:#fff;stroke-width:2.5;stroke-dasharray:8 8;opacity:.9}
+.tri polygon.base{fill:var(--c)}
+.tri polygon.stitch{fill:none;stroke:#fff;stroke-width:2.5;stroke-dasharray:8 8;opacity:.9}
+/* 写真の切り抜き。形は SVG の clipPath（objectBoundingBox）で決める */
+.ph{background:var(--photo) center/cover no-repeat}
+/* 中央 */
+.center{left:50%;top:40%;translate:-50% -50%;z-index:10;width:min(580px,84vw);aspect-ratio:1.4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#fff;border-radius:61% 39% 54% 46% / 47% 58% 42% 53%;padding:0 7%}
+.center .arc{font-weight:700;font-size:clamp(12px,1.4vw,15px);letter-spacing:.14em;color:var(--ink-2)}
+.title{margin:0;width:100%}
+.title img{display:block;width:100%;height:auto}
+.when{left:50%;top:65%;translate:-50% 0;z-index:12;display:flex;flex-direction:column;align-items:center;gap:16px}
+.date-card{display:block;padding:14px 26px 12px;border-radius:20px;background:#fff;color:var(--ink);text-decoration:none;font-family:"Outfit";line-height:1;text-align:left}
+.date-card .y{display:block;font-weight:800;font-size:18px}
+.date-card .d{display:flex;align-items:baseline;gap:6px;margin-top:4px;font-weight:900;font-size:clamp(36px,4.6vw,52px)}
+.date-card .d small{font-size:.32em;font-weight:800;letter-spacing:.04em}
+.date-card .d [data-lucide]{font-size:.5em;align-self:center}
+.date-card .v{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:6px;font-family:"Zen Kaku Gothic New";font-weight:700;font-size:14px}
+.date-card:hover .v{color:var(--g2)}
+.hero-cta{min-height:56px;padding:0 32px;font-size:17px;white-space:nowrap}
+/* 静岡のイラスト: 影を付けてゆっくり浮かせる */
+.illu{z-index:8;height:auto;filter:drop-shadow(0 16px 14px rgba(20,33,61,.22));rotate:var(--r,0deg);animation:float var(--d,7s) ease-in-out infinite;animation-delay:var(--dl,0s)}
+@keyframes float{50%{translate:0 -12px}}
+@media (prefers-reduced-motion:reduce){.illu{animation:none}}
+/* 下端の駿河湾。次の帯と同じ色で、点線のステッチを入れる */
+.shore{position:absolute;left:0;right:0;bottom:-1px;z-index:11;width:100%;height:90px;display:block}
+
+@media (max-width:760px){
+  .hd{padding:10px 14px}
+  .logo img{height:24px}
+  .hd-cta span{display:none}
+  .hero{min-height:760px}
+  .center{top:38%;aspect-ratio:1.2}
+  .when{top:61%}
+  .hero-cta{padding:0 24px;font-size:16px}
+  .sp-hide{display:none}
+  /* 散らす要素は位置の比率を保ったまま縮める */
+  .stage > :not(.center):not(.when){scale:.55;transform-origin:0 0}
+  .shore{height:56px}
+}
+
+/* apply band */
+.band{position:relative;background:linear-gradient(180deg,#0E8A9A,#0B5E86);color:#fff;text-align:center;padding:44px 16px 52px;overflow:hidden}
+.band p{margin:8px 0 14px;font-weight:700;letter-spacing:.06em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:0 40px;border-radius:999px;background:var(--cta);color:#fff;text-decoration:none;font-weight:900;font-size:18px;box-shadow:0 10px 30px rgba(255,79,0,.35);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.band .sub{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:10px 22px;border:1.5px solid rgba(255,255,255,.6);border-radius:14px;font-size:14px}
+
+/* section */
+.sec{max-width:1080px;margin:0 auto;padding:96px 16px}
+.sec-hd{text-align:center;margin-bottom:44px}
+.sec-hd .en{display:block;font-family:"Outfit";font-weight:800;font-size:13px;letter-spacing:.24em;color:var(--g3)}
+.sec-hd h2{margin:4px 0 0;font-size:clamp(28px,4vw,42px);font-weight:900;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+
+/* schedule */
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.day{position:relative;background:var(--card);border-radius:24px;padding:28px 16px 24px;text-align:center;box-shadow:0 10px 30px rgba(14,30,91,.06);overflow:hidden}
+.day::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:var(--grad)}
+.day .m{font-family:"Outfit";font-weight:700;font-size:15px;color:var(--ink-2);letter-spacing:.1em}
+.day .d{font-family:"Outfit";font-weight:900;font-size:clamp(56px,9vw,96px);line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.day .w{display:inline-block;margin-top:8px;font-family:"Outfit";font-weight:800;font-size:14px;letter-spacing:.12em;padding:4px 14px;border-radius:999px;background:#EAF5F2;color:var(--g1)}
+.place{margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;background:var(--card);border-radius:24px;padding:24px 28px;box-shadow:0 10px 30px rgba(14,30,91,.06)}
+.place-l{display:flex;align-items:center;gap:16px}
+.ico{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:var(--grad);color:#fff;font-size:24px}
+.place b{font-size:20px}
+/* 会場名の下の住所。アイコンの入れ物（.ico も span）には効かせない */
+.place-l div > span{display:block;color:var(--ink-2);font-size:14px}
+.ghost{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:999px;border:1.5px solid var(--g2);color:var(--g2);font-weight:700;font-size:14px;text-decoration:none}
+
+/* recruit panel */
+.panel{position:relative;background:rgba(255,255,255,.86);backdrop-filter:blur(6px);border-radius:32px;padding:clamp(28px,5vw,64px) clamp(16px,4vw,56px);box-shadow:0 20px 60px rgba(14,30,91,.08)}
+.floaty{position:absolute;height:auto;pointer-events:none;filter:drop-shadow(0 14px 18px rgba(14,30,91,.15))}
+.floaty.f1{width:clamp(90px,12vw,150px);right:-18px;top:-56px}
+.floaty.f2{width:clamp(70px,9vw,110px);right:clamp(72px,10vw,136px);top:-44px}
+.mem-hd{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 14px;font-family:"Outfit";font-weight:800;font-size:13px;letter-spacing:.16em;color:var(--g3)}
+.memories{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));gap:10px;aspect-ratio:16/7}
+.memories figure{position:relative;margin:0;border-radius:18px;overflow:hidden;background:#E3EFEC}
+.memories figure:first-child{grid-row:1/3}
+.memories img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.memories figure:hover img{transform:scale(1.05)}
+.memories figcaption{position:absolute;left:10px;bottom:10px;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.9);font-size:12px;font-weight:700;color:var(--ink)}
+.lead{text-align:center;font-weight:700;font-size:clamp(16px,2vw,19px);margin:-20px 0 40px}
+.lead mark{background:linear-gradient(transparent 62%,#CFF1E6 62%);color:inherit;padding:0 .1em}
+h3.sub-hd{display:flex;align-items:center;gap:10px;font-size:20px;margin:48px 0 18px}
+h3.sub-hd .n{font-family:"Outfit";font-weight:900;font-size:14px;color:#fff;background:var(--grad);border-radius:999px;padding:2px 10px}
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.type{display:flex;align-items:center;gap:16px;padding:22px;border-radius:22px;border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,var(--grad) border-box}
+.type b{font-size:20px}
+.type .badge{display:inline-block;margin-left:8px;font-size:12px;font-weight:700;color:var(--g1);background:#EAF0FF;border-radius:999px;padding:2px 10px;vertical-align:3px}
+
+.teams{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.teams.sub{grid-template-columns:repeat(3,1fr);margin-top:12px}
+.team{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 8px 16px;border-radius:20px;background:#F3FAF8;text-align:center;font-weight:700;cursor:help;outline:none;transition:transform .15s,box-shadow .15s}
+.team:hover,.team:focus-visible{transform:translateY(-3px);box-shadow:0 10px 24px rgba(14,30,91,.1)}
+.team .ti{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#fff;color:var(--g2);font-size:24px;box-shadow:inset 0 0 0 2px #D6ECE6}
+.team small{font-weight:500;font-size:12px;color:var(--ink-2)}
+.teams.sub .team{background:#fff;border:2px dashed #BFE3D8}
+.teams.sub .team .ti{color:var(--g3)}
+.kake{position:absolute;top:-10px;right:10px;font-size:11px;font-weight:800;color:#fff;background:var(--g4);border-radius:999px;padding:1px 9px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--ink-2);margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;counter-reset:f}
+.step{position:relative;text-align:center;padding:24px 12px;border-radius:22px;background:#F3FAF8}
+.step:not(:last-child)::after{content:"";position:absolute;right:-22px;top:50%;width:16px;height:16px;border-top:3px solid var(--g3);border-right:3px solid var(--g3);transform:translateY(-50%) rotate(45deg)}
+.step .si{font-size:30px;color:var(--g2)}
+.step .k{display:block;font-family:"Outfit";font-weight:900;font-size:13px;letter-spacing:.14em;color:var(--g3)}
+.step b{display:block;font-size:17px}
+
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-weight:700;font-size:14px;cursor:help;outline:none}
+.chip [data-lucide]{color:var(--g2);font-size:18px}
+.chip a{color:var(--g1)}
+
+.cta-wrap{text-align:center;margin-top:56px}
+.cta-wrap .ok{display:block;margin-top:14px;font-weight:700;color:var(--ink-2)}
+
+/* tooltip */
+[data-tip]{position:relative}
+[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,4px);width:max-content;max-width:240px;padding:10px 12px;border-radius:12px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;line-height:1.6;text-align:left;opacity:0;pointer-events:none;transition:.15s;z-index:10}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+
+footer{text-align:center;padding:40px 16px 56px;font-size:13px;color:var(--ink-2)}
+footer a{color:var(--g1)}
+
+@media (max-width:760px){
+  .days{gap:8px}
+  .day{padding:20px 6px 16px;border-radius:18px}
+  .teams{grid-template-columns:repeat(3,1fr)}
+  .teams.sub{grid-template-columns:repeat(3,1fr)}
+  .flow{grid-template-columns:1fr;gap:26px}
+  .step:not(:last-child)::after{right:50%;top:auto;bottom:-20px;transform:translateX(50%) rotate(135deg)}
+  .floaty.f1{right:-8px;top:-44px}
+  .floaty.f2{right:76px;top:-34px}
+  .memories{grid-template-columns:1fr 1fr;grid-template-rows:auto;aspect-ratio:auto}
+  .memories figure{aspect-ratio:4/3}
+  .memories figure:first-child{grid-row:auto;grid-column:1/3;aspect-ratio:16/9}
+}
+/* hidden tooltips must not widen the page */
+[data-tip]::after{display:none;max-width:min(240px,80vw)}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{display:block}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <a class="logo" href="#top"><img src="img/logo/brush.png" alt="PyCon JP 2027" width="966" height="235"></a>
+  <a class="hd-cta" href="#join"><i data-lucide="users"></i><span>主催メンバー募集</span></a>
+</header>
+
+<section class="hero" id="top">
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <defs>
+      <clipPath id="blob-bean" clipPathUnits="objectBoundingBox"><path d="M0.08,0.35 C0.12,0.05 0.55,-0.04 0.78,0.12 C1.02,0.3 1,0.75 0.8,0.9 C0.62,1.03 0.42,0.82 0.25,0.92 C0.05,1.02 -0.02,0.62 0.08,0.35 Z"/></clipPath>
+      <clipPath id="blob-round" clipPathUnits="objectBoundingBox"><path d="M0.5,0.02 C0.8,0 1,0.25 0.98,0.55 C0.96,0.85 0.72,1 0.45,0.98 C0.18,0.96 0,0.75 0.02,0.45 C0.04,0.18 0.25,0.04 0.5,0.02 Z"/></clipPath>
+      <clipPath id="tri-l" clipPathUnits="objectBoundingBox"><polygon points="0,0.98 0.4,0 1,0.72"/></clipPath>
+      <clipPath id="tri-r" clipPathUnits="objectBoundingBox"><polygon points="0.04,0 1,0.42 0.18,1"/></clipPath>
+    </defs>
+  </svg>
+  <div class="stage">
+    <div class="cut " style="left:12%;top:4%;width:150px;height:140px;--c:var(--kinu);rotate:-4deg;border-radius:6px"></div>
+    <div class="ph " style="left:14%;top:10%;width:270px;height:200px;--photo:url(img/2026/crowd.jpg);clip-path:url(#blob-bean)" role="img" aria-label="PyCon JP 2026 の休憩時間の参加者"></div>
+    <div class="squig sp-hide" style="left:12%;top:40%;width:220px;--c:var(--bay);rotate:-12deg"><svg viewBox="0 0 260 84" aria-hidden="true"><path class="base" d="M18,46 C40,8 72,8 92,38 S140,76 166,40 S218,6 242,44"/><path class="stitch" d="M18,46 C40,8 72,8 92,38 S140,76 166,40 S218,6 242,44"/></svg></div>
+    <div class="ph " style="left:10%;top:47%;width:300px;height:220px;--photo:url(img/2026/staff.jpg);clip-path:url(#tri-l)" role="img" aria-label="スタッフTシャツで打ち合わせするスタッフ"></div>
+    <div class="cut-fuji" style="left:13%;top:72%;width:280px;z-index:9"><svg viewBox="0 0 280 170" aria-hidden="true"><path d="M0,170 L104,26 Q140,-4 176,26 L280,170 Z" fill="var(--fuji)"/><path d="M104,26 Q140,-4 176,26 L200,60 L178,50 L162,66 L140,50 L118,66 L102,50 L80,60 Z" fill="#fff"/><path d="M18,162 L108,36 Q140,10 172,36 L262,162 Z" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="8 8" opacity=".85"/></svg></div>
+    <div class="cut sp-hide" style="left:43%;top:-2%;width:70px;height:130px;--c:var(--tea);rotate:16deg;border-radius:6px"></div>
+    <div class="cut sp-hide" style="left:63%;top:4%;width:170px;height:78px;--c:var(--ebi);rotate:-3deg;border-radius:6px"></div>
+    <div class="squig " style="left:76%;top:8%;width:240px;--c:var(--mikan);rotate:-6deg"><svg viewBox="0 0 260 84" aria-hidden="true"><path class="base" d="M18,46 C40,8 72,8 92,38 S140,76 166,40 S218,6 242,44"/><path class="stitch" d="M18,46 C40,8 72,8 92,38 S140,76 166,40 S218,6 242,44"/></svg></div>
+    <div class="ph " style="left:66%;top:22%;width:240px;height:210px;--photo:url(img/2026/prep.jpg);clip-path:url(#blob-round)" role="img" aria-label="ノートPCで準備作業をするスタッフ"></div>
+    <div class="tri sp-hide" style="left:73%;top:36%;width:240px;height:210px;--c:var(--bay);rotate:4deg"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon class="base" points="10,96 54,4 98,96"/><polygon class="stitch" points="20,90 54,18 88,90" vector-effect="non-scaling-stroke"/></svg></div>
+    <div class="cut sp-hide" style="left:79%;top:58%;width:120px;height:190px;--c:var(--kinu);rotate:10deg;border-radius:6px"></div>
+    <div class="ph " style="left:67%;top:60%;width:250px;height:260px;--photo:url(img/2026/reception.jpg);clip-path:url(#tri-r)" role="img" aria-label="受付でノベルティを準備するスタッフ"></div>
+    <div class="cut sp-hide" style="left:79%;top:80%;width:180px;height:120px;--c:var(--tea);border-radius:60% 40% 55% 45% / 50% 60% 40% 50%;rotate:-8deg"></div>
+    <div class="squig sp-hide" style="left:58%;top:84%;width:200px;--c:var(--mikan);rotate:80deg"><svg viewBox="0 0 260 84" aria-hidden="true"><path class="base" d="M18,46 C40,8 72,8 92,38 S140,76 166,40 S218,6 242,44"/><path class="stitch" d="M18,46 C40,8 72,8 92,38 S140,76 166,40 S218,6 242,44"/></svg></div>
+    <img class="illu " src="img/shizuoka/nigiri-maguro.webp" alt="" style="left:31%;top:8%;width:92px;--r:-8deg;--d:7s;--dl:-1s">
+    <img class="illu sp-hide" src="img/shizuoka/tealeaf.webp" alt="" style="left:6%;top:34%;width:78px;--r:12deg;--d:8s;--dl:-3s">
+    <img class="illu " src="img/shizuoka/mikan.webp" alt="" style="left:33%;top:66%;width:96px;--r:0deg;--d:6.5s;--dl:-2s">
+    <img class="illu sp-hide" src="img/shizuoka/yunomi.webp" alt="" style="left:88%;top:30%;width:80px;--r:6deg;--d:7.5s;--dl:-4s">
+    <img class="illu " src="img/shizuoka/aji.webp" alt="" style="left:56%;top:70%;width:110px;--r:-4deg;--d:8.5s;--dl:-5s">
+    <img class="illu sp-hide" src="img/shizuoka/nigiri-aji.webp" alt="" style="left:87%;top:70%;width:96px;--r:8deg;--d:7s;--dl:-2.5s">
+    <div class="center">
+      <span class="arc">NUMAZU · SHIZUOKA</span>
+      <h1 class="title"><img src="img/logo/brush.png" alt="PyCon JP 2027" width="966" height="235"></h1>
+    </div>
+    <div class="when">
+      <a class="date-card" href="https://www.google.com/maps/search/?api=1&query=%E3%83%97%E3%83%A9%E3%82%B5%E3%83%B4%E3%82%A7%E3%83%AB%E3%83%87" target="_blank" rel="noopener" aria-label="2027年9月24日金曜日から26日日曜日、沼津プラサヴェルデ（地図を開く）">
+        <span class="y">2027</span>
+        <span class="d">9.24<small>FRI</small><i data-lucide="arrow-right"></i>9.26<small>SUN</small></span>
+        <span class="v"><i data-lucide="map-pin"></i>@沼津プラサヴェルデ</span>
+      </a>
+      <a class="btn hero-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener"><i data-lucide="pen-line"></i>主催メンバーに申し込む</a>
+    </div>
+  </div>
+  <svg class="shore" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,40 C120,10 240,10 360,40 S600,70 720,40 S960,10 1080,40 S1320,70 1440,40 V90 H0 Z" fill="#0E8A9A"/>
+    <path d="M0,52 C120,22 240,22 360,52 S600,82 720,52 S960,22 1080,52 S1320,82 1440,52" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="10 10" opacity=".8" vector-effect="non-scaling-stroke"/>
+  </svg>
+</section>
+
+<section class="band">
+  <p>＼ いっしょにつくろう ／</p>
+  <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener"><i data-lucide="pen-line"></i>主催メンバーに申し込む</a>
+  <br>
+  <span class="sub"><i data-lucide="sparkles"></i>運営の経験がなくても大丈夫</span>
+</section>
+
+<section class="sec" id="schedule">
+  <div class="sec-hd"><span class="en">SCHEDULE</span><h2>開催日程</h2></div>
+  <div class="days">
+    <div class="day"><div class="m">2027.09</div><div class="d">24</div><span class="w">FRI</span></div>
+    <div class="day"><div class="m">2027.09</div><div class="d">25</div><span class="w">SAT</span></div>
+    <div class="day"><div class="m">2027.09</div><div class="d">26</div><span class="w">SUN</span></div>
+  </div>
+  <div class="place">
+    <div class="place-l"><span class="ico"><i data-lucide="map-pin"></i></span><div><b>沼津プラサヴェルデ</b><span>静岡県沼津市</span></div></div>
+    <a class="ghost" href="https://www.google.com/maps/search/?api=1&query=%E3%83%97%E3%83%A9%E3%82%B5%E3%83%B4%E3%82%A7%E3%83%AB%E3%83%87" target="_blank" rel="noopener"><i data-lucide="map"></i>地図</a>
+  </div>
+</section>
+
+<section class="sec" id="join" style="padding-top:24px">
+  <div class="panel">
+    <img class="floaty f1" src="img/shizuoka/mikan.webp" alt="">
+    <img class="floaty f2" src="img/shizuoka/tealeaf.webp" alt="">
+    <div class="sec-hd"><span class="en">JOIN US</span><h2>主催メンバー募集</h2></div>
+    <p class="lead">PyCon JP 2027 を<mark>いっしょにつくる仲間</mark>を募集します</p>
+
+    <p class="mem-hd"><i data-lucide="camera"></i>PyCon JP 2026 HIROSHIMA</p>
+    <div class="memories">
+      <figure><img src="img/2026/group.jpg" alt="PyCon JP 2026 の参加者とスタッフの集合写真" loading="lazy"><figcaption><i data-lucide="users"></i>みんなで</figcaption></figure>
+      <figure><img src="img/2026/setup.jpg" alt="演台に PyCon JP の幕を取り付けるスタッフ" loading="lazy"><figcaption><i data-lucide="hammer"></i>会場の設営</figcaption></figure>
+      <figure><img src="img/2026/reception.jpg" alt="受付でノベルティを準備するスタッフ" loading="lazy"><figcaption><i data-lucide="ticket"></i>受付の準備</figcaption></figure>
+      <figure><img src="img/2026/prep.jpg" alt="ノートPCで作業するスタッフ" loading="lazy"><figcaption><i data-lucide="laptop"></i>準備作業</figcaption></figure>
+      <figure><img src="img/2026/staff.jpg" alt="スタッフTシャツで打ち合わせするスタッフ" loading="lazy"><figcaption><i data-lucide="message-circle"></i>当日の運営</figcaption></figure>
+    </div>
+
+    <h3 class="sub-hd"><span class="n">01</span>募集区分</h3>
+    <div class="types">
+      <div class="type"><span class="ico"><i data-lucide="flame"></i></span><div><b>コアスタッフ</b><span class="badge">継続参加</span><br><small>企画・準備・当日運営まで</small></div></div>
+      <div class="type"><span class="ico"><i data-lucide="hand-helping"></i></span><div><b>サポートスタッフ</b><span class="badge">できる範囲で</span><br><small>タスクと時間帯を選んで</small></div></div>
+    </div>
+
+    <h3 class="sub-hd"><span class="n">02</span>チーム</h3>
+    <div class="teams">
+      <div class="team" tabindex="0" data-tip="トークの公募やキーノートなど、イベントの中身づくり" aria-label="企画：トークの公募やキーノートなど、イベントの中身づくり"><span class="ti"><i data-lucide="presentation"></i></span>企画<small>トーク・企画</small></div>
+      <div class="team" tabindex="0" data-tip="レイアウトや搬入、当日の会場運営" aria-label="会場：レイアウトや搬入、当日の会場運営"><span class="ti"><i data-lucide="building-2"></i></span>会場<small>会場づくり</small></div>
+      <div class="team" tabindex="0" data-tip="チケットや受付、アクセシビリティの支援" aria-label="参加者：チケットや受付、アクセシビリティの支援"><span class="ti"><i data-lucide="ticket"></i></span>参加者<small>チケット・受付</small></div>
+      <div class="team" tabindex="0" data-tip="スポンサーの募集やブースの調整" aria-label="協賛：スポンサーの募集やブースの調整"><span class="ti"><i data-lucide="handshake"></i></span>協賛<small>スポンサー</small></div>
+      <div class="team" tabindex="0" data-tip="ブログの公開、SNSなどでの発信" aria-label="広報：ブログの公開、SNSなどでの発信"><span class="ti"><i data-lucide="megaphone"></i></span>広報<small>Web・SNS</small></div>
+    </div>
+    <div class="teams sub">
+      <div class="team" tabindex="0" data-tip="Webサイトやアプリの実装" aria-label="開発（かけもち）：Webサイトやアプリの実装"><span class="kake">かけもち</span><span class="ti"><i data-lucide="code"></i></span>開発<small>Web・アプリ</small></div>
+      <div class="team" tabindex="0" data-tip="ロゴや掲示物のデザイン" aria-label="デザイン（かけもち）：ロゴや掲示物のデザイン"><span class="kake">かけもち</span><span class="ti"><i data-lucide="palette"></i></span>デザイン<small>ロゴ・掲示物</small></div>
+      <div class="team" tabindex="0" data-tip="静岡の業者や地域団体との連携" aria-label="地域連携（かけもち）：静岡の業者や地域団体との連携"><span class="kake">かけもち</span><span class="ti"><i data-lucide="map-pinned"></i></span>地域連携<small>静岡とつなぐ</small></div>
+    </div>
+    <div class="legend"><span><i data-lucide="circle-check"></i>メインを1つ選択</span><span><i data-lucide="plus"></i>かけもちは任意</span><span><i data-lucide="clock"></i>チームは申し込み後に決定</span></div>
+
+    <h3 class="sub-hd"><span class="n">03</span>参加の流れ</h3>
+    <div class="flow">
+      <div class="step"><span class="k">STEP 1</span><i class="si" data-lucide="file-pen-line"></i><b>フォームで申し込み</b></div>
+      <div class="step"><span class="k">STEP 2</span><i class="si" data-lucide="message-circle"></i><b>Slackに招待</b></div>
+      <div class="step"><span class="k">STEP 3</span><i class="si" data-lucide="compass"></i><b>オンボーディング</b></div>
+    </div>
+
+    <h3 class="sub-hd"><span class="n">04</span>参加にあたって</h3>
+    <div class="chips">
+      <span class="chip" tabindex="0" data-tip="運営スタッフは無償のボランティアとしての参加です"><i data-lucide="heart-handshake"></i>無償ボランティア</span>
+      <span class="chip" tabindex="0" data-tip="日本語で日常会話ができることが必要です"><i data-lucide="languages"></i>日本語で日常会話</span>
+      <span class="chip" tabindex="0" data-tip="PyCon JP Code of Conduct への同意をお願いします"><i data-lucide="shield-check"></i><a href="https://www.pycon.jp/policies/code-of-conduct.html">行動規範</a>に同意</span>
+      <span class="chip" tabindex="0" data-tip="連絡や相談にはSlackを使います"><i data-lucide="message-square"></i>連絡はSlack</span>
+      <span class="chip" tabindex="0" data-tip="開催当日の会場までの交通費・宿泊費は、自己負担が発生することもあります"><i data-lucide="train-front"></i>交通・宿泊は自己負担の場合あり</span>
+    </div>
+
+    <div class="cta-wrap">
+      <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener"><i data-lucide="pen-line"></i>主催メンバーに申し込む</a>
+      <span class="ok">運営の経験がなくても大丈夫です</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><i data-lucide="mail"></i> お問い合わせ <a href="mailto:contact@pycon.jp">contact@pycon.jp</a></p>
+  <p>主催：一般社団法人PyCon JP Association</p>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

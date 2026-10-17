@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>イベントサイト集</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{--bg:#F4F6F5;--card:#fff;--ink:#14213D;--sub:#5A6474;--acc:#1688D4;--ref:#FF4F00;--tag:#EEF2F4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7}
+a{color:var(--acc)}
+[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-.12em}
+main{max-width:1240px;margin:0 auto;padding:40px 16px 72px}
+h1{margin:0;font-size:26px}
+.meta{margin:4px 0 20px;color:var(--sub);font-size:14px}
+.filters{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;padding:10px 0;background:var(--bg)}
+.filters button{border:1.5px solid #D5DCE3;background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.filters button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+h2{display:flex;align-items:center;gap:8px;margin:36px 0 14px;font-size:20px}
+h2 small{font-size:13px;font-weight:500;color:var(--sub)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:18px}
+.site{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);display:flex;flex-direction:column}
+.site.ref{outline:3px solid var(--ref)}
+.shots{position:relative;background:#DDE3E8}
+.shots .pc{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
+.shots .sp{position:absolute;right:10px;bottom:-26px;width:22%;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:10px;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.body{padding:14px 18px 18px}
+.name{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-weight:900;font-size:17px;padding-right:24%}
+.badge{font-size:11px;font-weight:700;border-radius:999px;padding:1px 9px;background:var(--tag);color:var(--sub)}
+.badge.ref{background:var(--ref);color:#fff}
+.badge.end{background:#FDECEC;color:#B3261E}
+.url{font-size:12px;word-break:break-all}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tags span{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--tag)}
+.tags span.hit{background:#FFE9DC;color:#B4400B}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--sub);margin:4px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i.sw{display:inline-block;width:14px;height:14px;border-radius:999px;background:#FFE9DC}
+footer{margin-top:40px;font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+<main>
+  <h1>イベントサイト集</h1>
+  <p class="meta">技術カンファレンス7件と音楽フェス3件の公式サイト。PC 1280×800 / スマホ 390×844 で 2026-10-16 に撮影。</p>
+  
+  <div class="filters" id="filters"></div>
+  <div id="list"></div>
+  <footer>FUJI ROCK、Primavera Sound、Web Summit、SXSW、VIVA LA ROCK、Sónar、Tokyo Game Show も撮影しましたが、写真が読み込まれない・開催後の告知だけ・前年版のまま、のいずれかで外しました。</footer>
+</main>
+<script>
+const PATTERNS = {
+  graphic: { title: 'グラフィックが主役', note: 'イベント固有のグラフィックを画面いっぱいに使う' },
+  minimal: { title: 'ロゴとタイポだけ', note: '黒地や白地にロゴと文字だけを置き、余白で見せる' },
+  world: { title: '写真・イラストで世界観', note: '会場や出演者、モチーフの絵で雰囲気を伝える' },
+};
+const SITES = [
+  { id: 'config', p: 'graphic', name: 'Figma Config 2026', where: '技術・海外', url: 'https://config.figma.com/',
+    tags: ['緑地に有機的なドットを全面', '手描き風のカスタムロゴ', '黒いパネルで開催地ごとの日程', '強い1色'] },
+  { id: 'stripe', p: 'graphic', name: 'Stripe Sessions 2027', where: '技術・海外', url: 'https://stripe.com/sessions',
+    tags: ['大きなコピー1行', '虹色の3Dリボン', '日程と会場は右上に小さく', '白地'] },
+  { id: 'googleio', p: 'graphic', name: 'Google I/O 2026', where: '技術・海外', url: 'https://io.google/',
+    tags: ['黒地', 'グラデーションの「I/O」ロゴ', '巨大な見出し', 'パズルなど参加型の導線'] },
+  { id: 'ship', p: 'minimal', name: 'Vercel Ship 26', where: '技術・海外', url: 'https://vercel.com/ship',
+    tags: ['黒地に動画', 'ロゴだけを中央に', '再生ボタン', '余白を大きく'] },
+  { id: 'universe', p: 'minimal', name: 'GitHub Universe 2026', where: '技術・海外', url: 'https://githubuniverse.com/',
+    tags: ['等幅フォントのティッカー', '「stay-tuned/」の一言', '緑のチケットボタン', '罫線のグリッド'] },
+  { id: 'coachella', p: 'minimal', name: 'Coachella 2027', where: '音楽・海外', url: 'https://www.coachella.com/',
+    tags: ['夕焼けのグラデーション', '細いセリフの英字', '日程を右上に', 'Waitlistボタン'] },
+  { id: 'jsconf', p: 'minimal', name: 'JSConf JP 2026', where: '技術・国内', url: 'https://jsconf.jp/2026/',
+    tags: ['大きな円形ロゴ', '日付を見出しの下に', 'チケット案内の箱', '白＋オレンジ'] },
+  { id: 'tskaigi', p: 'world', name: 'TSKaigi 2026', where: '技術・国内', url: 'https://2026.tskaigi.org/',
+    tags: ['紙飛行機の3Dイラスト', '日程と会場をロゴの下に大きく', 'お知らせカード', '水色'] },
+  { id: 'summersonic', p: 'world', name: 'SUMMER SONIC 2026', where: '音楽・国内', url: 'https://www.summersonic.com/',
+    tags: ['出演者写真のカルーセル', '会場のイラスト', '東京・大阪の日程カード', '情報量が多い'] },
+  { id: 'rij', p: 'world', name: 'ROCK IN JAPAN FESTIVAL 2026', where: '音楽・国内', url: 'https://rijfes.jp/',
+    tags: ['空の写真にレトロなロゴ', '赤い面との2分割', '縦のメニュー', 'オープニング演出'] },
+];
+const filters = document.getElementById('filters');
+const list = document.getElementById('list');
+let current = 'all';
+const keys = ['all', ...Object.keys(PATTERNS)];
+keys.forEach(k => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.dataset.k = k;
+  b.textContent = k === 'all' ? `すべて ${SITES.length}` : `${PATTERNS[k].title} ${SITES.filter(s => s.p === k).length}`;
+  b.onclick = () => { current = k; render(); };
+  filters.appendChild(b);
+});
+function card(s) {
+  const hit = new Set(s.hit || []);
+  return `<article class="site${s.ref ? ' ref' : ''}">
+    <div class="shots"><img class="pc" src="img/ev10/${s.id}-pc.jpg" alt="${s.name} のPC表示" loading="lazy"><img class="sp" src="img/ev10/${s.id}-sp.jpg" alt="${s.name} のスマホ表示" loading="lazy"></div>
+    <div class="body">
+      <div class="name">${s.name}${s.ref ? '<span class="badge ref">参考</span>' : ''}<span class="badge">${s.where}</span>${s.end ? '<span class="badge end">終了</span>' : ''}</div>
+      <a class="url" href="${s.url}" target="_blank" rel="noopener">${s.url.replace(/^https?:\/\//, '')}</a>
+      <div class="tags">${s.tags.map(t => `<span class="${hit.has(t) ? 'hit' : ''}">${t}</span>`).join('')}</div>
+    </div>
+  </article>`;
+}
+function render() {
+  filters.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === current));
+  list.innerHTML = Object.entries(PATTERNS)
+    .filter(([k]) => current === 'all' || current === k)
+    .map(([k, v]) => `<h2>${v.title}${v.note ? ` <small>${v.note}</small>` : ''}</h2><div class="grid">${SITES.filter(s => s.p === k).map(card).join('')}</div>`)
+    .join('');
+}
+render();
+lucide.createIcons();
+</script>
+</body>
+</html>

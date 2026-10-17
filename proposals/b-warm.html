@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyCon JP 2027 案B Warm Harbor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --bg:#F3EEE4; --card:#FFFDF8; --ink:#14213D; --ink-2:#4A5568; --line:#E6DDCC;
+  --orange:#F39800; --orange-d:#C46E00; --orange-l:#FDE9C8; --navy:#14213D; --navy-l:#DCE3F0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",sans-serif;line-height:1.8;font-size:15px;overflow-x:hidden}
+a{color:inherit}
+[data-lucide]{width:1em;height:1em;stroke-width:2}
+
+/* header */
+.hd{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px clamp(16px,3vw,32px);background:rgba(243,238,228,.92);backdrop-filter:blur(6px)}
+.logo{display:flex;align-items:center;gap:8px;font-family:"Zen Maru Gothic";font-weight:900;font-size:18px;text-decoration:none}
+.logo .dot{width:26px;height:26px;border-radius:50%;background:conic-gradient(var(--orange) 0 50%,var(--navy) 0 100%);border:3px solid var(--card);box-shadow:0 0 0 2px var(--orange)}
+.nav{display:flex;align-items:center;gap:20px;font-weight:700;font-size:14px}
+.nav a{text-decoration:none}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff!important;text-decoration:none;font-weight:700;border-radius:999px;padding:8px 18px}
+
+/* hero */
+.hero{position:relative;padding:24px clamp(16px,3vw,32px) 0;overflow:hidden}
+.hero-frame{position:relative;max-width:1180px;margin:0 auto;border-radius:28px;overflow:hidden;aspect-ratio:16/8.4;background:url(img/b-hero.jpg) center 60%/cover}
+.hero-frame::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(243,238,228,.96) 0%,rgba(243,238,228,.86) 34%,rgba(243,238,228,0) 62%)}
+.stripes{position:absolute;inset:0;pointer-events:none}
+.stripes i{position:absolute;width:14px;height:160%;top:-30%;transform:rotate(32deg);opacity:.85}
+.hero-copy{position:absolute;left:clamp(20px,5vw,64px);top:50%;transform:translateY(-50%);max-width:46%}
+.brush{margin:0;font-family:"Yuji Syuku",serif;font-weight:400;font-size:clamp(46px,7.4vw,104px);line-height:1;color:#3C3C3C;letter-spacing:-.01em}
+.brush span{display:block;font-size:.62em;color:var(--orange-d);margin-top:.12em}
+.hero-date{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:22px;padding:12px 18px;background:var(--card);border-radius:16px;box-shadow:0 6px 20px rgba(20,33,61,.08);font-family:"Zen Maru Gothic";font-weight:900;font-size:clamp(16px,2vw,22px)}
+.hero-date .v{display:flex;align-items:center;gap:6px;font-size:.72em;color:var(--ink-2);font-weight:700}
+.hero-cta{display:flex;justify-content:center;margin-top:-32px;position:relative;z-index:2}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:60px;padding:0 44px;background:var(--navy);color:#fff;text-decoration:none;font-weight:700;font-size:17px;border-radius:999px;box-shadow:0 10px 24px rgba(20,33,61,.25);border:4px solid var(--bg);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.or{background:var(--orange-d)}
+
+/* section */
+.sec{max-width:1180px;margin:0 auto;padding:88px clamp(16px,3vw,32px) 24px}
+.h2{display:flex;align-items:center;gap:12px;margin:0 0 28px;font-family:"Zen Maru Gothic";font-weight:900;font-size:clamp(26px,3.4vw,34px)}
+.h2 .mk{width:26px;height:26px;border-radius:50%;background:conic-gradient(var(--orange) 0 50%,var(--navy) 0 100%);flex:none}
+.h2 .en{font-family:"Noto Sans JP";font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--orange-d)}
+.card{background:var(--card);border-radius:22px;box-shadow:0 2px 0 var(--line)}
+
+/* about grid */
+.about{display:grid;grid-template-columns:1fr 1.15fr;gap:32px;align-items:start}
+.about h3{margin:0 0 12px;font-family:"Zen Maru Gothic";font-weight:900;font-size:clamp(20px,2.4vw,26px);line-height:1.5}
+.about p{margin:0;color:var(--ink-2)}
+.info{display:grid;grid-template-columns:1fr 1fr;padding:12px}
+.info > div{display:flex;gap:14px;padding:18px}
+.info > div:nth-child(1),.info > div:nth-child(2){border-bottom:1px solid var(--line)}
+.info > div:nth-child(odd){border-right:1px solid var(--line)}
+.ib{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--orange-l);color:var(--orange-d);font-size:20px}
+.info small{display:block;color:var(--ink-2);font-size:12px}
+.info b{display:block;font-size:15px;line-height:1.6}
+.days{display:flex;gap:8px;margin-top:20px}
+.day{flex:1;text-align:center;padding:12px 6px;border-radius:16px;background:var(--card);border:2px solid var(--line);font-family:"Zen Maru Gothic";font-weight:900}
+.day b{display:block;font-size:30px;line-height:1.1}
+.day small{font-size:12px;color:var(--ink-2);letter-spacing:.12em}
+.day.sat b{color:#2E5AAC}.day.sun b{color:#C8402F}
+
+/* recruit */
+.types{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.type{position:relative;overflow:hidden;padding:28px}
+.type::after{content:"";position:absolute;right:0;bottom:0;width:46%;height:100%;background:linear-gradient(110deg,transparent 30%,var(--orange-l) 30% 62%,transparent 62%);opacity:.9;pointer-events:none}
+.type.n::after{background:linear-gradient(110deg,transparent 30%,var(--navy-l) 30% 62%,transparent 62%)}
+.type .lab{font-size:11px;font-weight:700;letter-spacing:.24em;color:var(--orange-d)}
+.type.n .lab{color:#3A5590}
+.type h3{margin:2px 0 6px;font-family:"Zen Maru Gothic";font-weight:900;font-size:24px}
+.tags{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:6px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:4px 12px;border-radius:999px;background:var(--bg)}
+
+.teams-wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:center;margin-top:24px}
+.teams-card{padding:28px}
+.teams-card h3{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:16px}
+.teams-card h3 .badge{font-size:11px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--orange);color:#fff}
+.teams-card h3 .badge.n{background:var(--navy)}
+.tgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.tgrid.k{grid-template-columns:repeat(3,1fr)}
+.team{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px;border-radius:16px;background:var(--bg);font-weight:700;font-size:14px;text-align:center;cursor:help;outline:none;transition:background .15s}
+.team:hover,.team:focus-visible{background:var(--orange-l)}
+.team .ti{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--card);color:var(--orange-d);font-size:22px;border:2px solid var(--orange)}
+.tgrid.k .team .ti{color:var(--navy);border-color:var(--navy);border-style:dashed}
+.sep{display:flex;align-items:center;gap:10px;margin:22px 0 14px;color:var(--ink-2);font-size:13px;font-weight:700}
+.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
+.illus{border-radius:22px;width:100%;display:block;mix-blend-mode:multiply}
+
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;padding:28px}
+.step{display:flex;align-items:center;gap:14px}
+.step .no{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--navy);color:#fff;font-family:"Zen Maru Gothic";font-weight:900;font-size:22px}
+.step b{display:block;font-size:16px}
+.step small{display:flex;align-items:center;gap:6px;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:var(--card);font-weight:700;font-size:13px;cursor:help;outline:none;box-shadow:0 2px 0 var(--line)}
+.chip [data-lucide]{color:var(--orange-d);font-size:16px}
+.final{text-align:center;padding:56px 16px 96px}
+.final p{margin:14px 0 0;color:var(--ink-2);font-weight:700}
+
+/* tooltip */
+[data-tip]{position:relative}
+[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,4px);width:max-content;max-width:230px;padding:9px 12px;border-radius:10px;background:var(--navy);color:#fff;font-size:12px;font-weight:500;line-height:1.6;text-align:left;opacity:0;pointer-events:none;transition:.15s;z-index:10}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+
+footer{background:var(--navy);color:#DCE3F0;padding:40px clamp(16px,3vw,32px);font-size:13px}
+footer .in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px 40px;justify-content:space-between}
+footer small{display:block;color:#9AA7C2;font-size:11px}
+
+@media (max-width:860px){
+  .nav .tx{display:none}
+  .hero-frame{aspect-ratio:auto;min-height:520px;background-position:68% 100%;background-size:auto 62%;background-repeat:no-repeat;background-color:var(--bg)}
+  .hero-frame::before{background:linear-gradient(180deg,rgba(243,238,228,1) 0%,rgba(243,238,228,1) 46%,rgba(243,238,228,0) 66%)}
+  .hero-copy{position:relative;top:auto;transform:none;max-width:none;padding:32px 20px 0}
+  .about,.types,.teams-wrap{grid-template-columns:1fr}
+  .info{grid-template-columns:1fr}
+  .info > div{border-right:0!important;border-bottom:1px solid var(--line)}
+  .info > div:last-child{border-bottom:0}
+  .tgrid{grid-template-columns:repeat(3,1fr)}
+  .flow{grid-template-columns:1fr}
+}
+/* hidden tooltips must not widen the page */
+[data-tip]::after{display:none;max-width:min(240px,80vw)}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{display:block}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <a class="logo" href="#top"><span class="dot" aria-hidden="true"></span>PyCon JP 2027</a>
+  <nav class="nav">
+    <a class="tx" href="#schedule">開催日程</a>
+    <a class="tx" href="#join">主催メンバー募集</a>
+    <a class="pill" href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener"><i data-lucide="pen-line"></i>申し込む</a>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-frame">
+    <div class="stripes" aria-hidden="true">
+      <i style="left:52%;background:var(--orange)"></i>
+      <i style="left:56%;width:4px;background:var(--navy)"></i>
+      <i style="left:88%;width:22px;background:rgba(243,152,0,.55)"></i>
+    </div>
+    <div class="hero-copy">
+      <h1 class="brush">PyCon JP<span>2027 沼津</span></h1>
+      <div class="hero-date">2027.9.24 金 – 26 日<span class="v"><i data-lucide="map-pin"></i>沼津プラサヴェルデ</span></div>
+    </div>
+  </div>
+  <div class="hero-cta"><a class="btn" href="#join">主催メンバー募集<i data-lucide="arrow-right"></i></a></div>
+</section>
+
+<section class="sec" id="schedule">
+  <h2 class="h2"><span class="mk" aria-hidden="true"></span>開催日程<span class="en">SCHEDULE</span></h2>
+  <div class="about">
+    <div>
+      <h3>2027年9月、静岡県沼津市で<br>PyCon JP を開催します。</h3>
+      <div class="days">
+        <div class="day"><b>24</b><small>FRI</small></div>
+        <div class="day sat"><b>25</b><small>SAT</small></div>
+        <div class="day sun"><b>26</b><small>SUN</small></div>
+      </div>
+    </div>
+    <div class="card info">
+      <div><span class="ib"><i data-lucide="calendar-days"></i></span><div><small>日程</small><b>2027年9月24日（金）〜26日（日）</b></div></div>
+      <div><span class="ib"><i data-lucide="map-pin"></i></span><div><small>会場</small><b>沼津プラサヴェルデ<br>（静岡県沼津市）</b></div></div>
+      <div><span class="ib"><i data-lucide="sun"></i></span><div><small>期間</small><b>3日間（金・土・日）</b></div></div>
+      <div><span class="ib"><i data-lucide="landmark"></i></span><div><small>主催</small><b>一般社団法人<br>PyCon JP Association</b></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="join">
+  <h2 class="h2"><span class="mk" aria-hidden="true"></span>主催メンバー募集<span class="en">JOIN US</span></h2>
+
+  <div class="types">
+    <div class="card type">
+      <span class="lab">CORE STAFF</span>
+      <h3>コアスタッフ</h3>
+      <div class="tags">
+        <span class="tag"><i data-lucide="repeat"></i>継続参加</span>
+        <span class="tag" tabindex="0" data-tip="定期的なミーティングとSlackでの相談を通して準備を進めます"><i data-lucide="calendar-check"></i>定例ミーティング</span>
+        <span class="tag"><i data-lucide="flag"></i>企画〜当日運営</span>
+      </div>
+    </div>
+    <div class="card type n">
+      <span class="lab">SUPPORT STAFF</span>
+      <h3>サポートスタッフ</h3>
+      <div class="tags">
+        <span class="tag"><i data-lucide="list-checks"></i>タスクを選ぶ</span>
+        <span class="tag"><i data-lucide="clock"></i>時間帯を選ぶ</span>
+        <span class="tag" tabindex="0" data-tip="準備期間中の特定の作業や、開催当日の運営など、できる範囲で運営を支えます"><i data-lucide="heart"></i>できる範囲で</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="teams-wrap">
+    <div class="card teams-card">
+      <h3><span class="badge">メイン</span>1つ選ぶ</h3>
+      <div class="tgrid">
+        <div class="team" tabindex="0" data-tip="トークの公募やキーノートなど、イベントの中身づくり"><span class="ti"><i data-lucide="presentation"></i></span>企画</div>
+        <div class="team" tabindex="0" data-tip="レイアウトや搬入、当日の会場運営"><span class="ti"><i data-lucide="building-2"></i></span>会場</div>
+        <div class="team" tabindex="0" data-tip="チケットや受付、アクセシビリティの支援"><span class="ti"><i data-lucide="ticket"></i></span>参加者</div>
+        <div class="team" tabindex="0" data-tip="スポンサーの募集やブースの調整"><span class="ti"><i data-lucide="handshake"></i></span>協賛</div>
+        <div class="team" tabindex="0" data-tip="ブログの公開、SNSなどでの発信"><span class="ti"><i data-lucide="megaphone"></i></span>広報</div>
+      </div>
+      <div class="sep"><i data-lucide="plus"></i>かけもちOK</div>
+      <div class="tgrid k">
+        <div class="team" tabindex="0" data-tip="Webサイトやアプリの実装"><span class="ti"><i data-lucide="code"></i></span>開発</div>
+        <div class="team" tabindex="0" data-tip="ロゴや掲示物のデザイン"><span class="ti"><i data-lucide="palette"></i></span>デザイン</div>
+        <div class="team" tabindex="0" data-tip="静岡の業者や地域団体との連携"><span class="ti"><i data-lucide="map-pinned"></i></span>地域連携</div>
+      </div>
+    </div>
+    <img class="illus" src="img/b-team.jpg" alt="段ボールやバナー、ノートPCで準備するスタッフのイラスト">
+  </div>
+
+  <div class="card flow">
+    <div class="step"><span class="no">1</span><div><b>フォームで申し込み</b><small><i data-lucide="file-pen-line"></i>Google フォーム</small></div></div>
+    <div class="step"><span class="no">2</span><div><b>Slackに招待</b><small><i data-lucide="message-circle"></i>運営の連絡はSlack</small></div></div>
+    <div class="step"><span class="no">3</span><div><b>オンボーディング</b><small><i data-lucide="compass"></i>説明を聞いてチーム決定</small></div></div>
+  </div>
+
+  <div class="chips">
+    <span class="chip" tabindex="0" data-tip="運営スタッフは無償のボランティアとしての参加です"><i data-lucide="heart-handshake"></i>無償ボランティア</span>
+    <span class="chip" tabindex="0" data-tip="日本語で日常会話ができることが必要です"><i data-lucide="languages"></i>日本語で日常会話</span>
+    <span class="chip" tabindex="0" data-tip="PyCon JP Code of Conduct への同意をお願いします"><i data-lucide="shield-check"></i><a href="https://www.pycon.jp/policies/code-of-conduct.html">行動規範</a>に同意</span>
+    <span class="chip" tabindex="0" data-tip="開催当日の会場までの交通費・宿泊費は、自己負担が発生することもあります"><i data-lucide="train-front"></i>交通・宿泊は自己負担の場合あり</span>
+  </div>
+</section>
+
+<section class="final">
+  <a class="btn or" href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener"><i data-lucide="pen-line"></i>主催メンバーに申し込む<i data-lucide="external-link"></i></a>
+  <p>運営の経験がなくても大丈夫です</p>
+</section>
+
+<footer>
+  <div class="in">
+    <div><small>主催</small>一般社団法人PyCon JP Association</div>
+    <div><small>お問い合わせ</small><a href="mailto:contact@pycon.jp">contact@pycon.jp</a></div>
+    <div><small>行動規範</small><a href="https://www.pycon.jp/policies/code-of-conduct.html">Code of Conduct</a></div>
+  </div>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

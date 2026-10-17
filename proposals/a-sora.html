@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="pageTitle">PyCon JP 2027 案A 夏空</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+/* 夏空の配色: 白地に藍、アクセントは朱。枠は細い罫線と淡い影 */
+:root{
+  --bg:#F4F7FB; --ink:#13213F; --ink-2:#4A5672; --card:#FFFFFF;
+  --ai:#163A8A; --shu:#E0402A; --ki:#D6E6FB; --matsu:#2E8B57;
+  --cta:#E0402A;
+  --bd:1.5px solid #D6DFEC; --sh:0 8px 24px rgba(19,33,63,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.num{font-family:"Outfit",sans-serif}
+[data-lucide]{width:1em;height:1em;stroke-width:2}
+
+/* ヒーローに重ねるヘッダー */
+.site-hd{position:fixed;top:0;left:0;width:100%;height:64px;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 24px;background:transparent;color:#fff;text-shadow:0 2px 3px var(--ink),0 0 8px var(--ink);transition:background .2s,color .2s,box-shadow .2s,text-shadow .2s,backdrop-filter .2s}
+.site-hd.is-solid{background:rgba(255,255,255,.92);backdrop-filter:blur(8px);color:var(--ink);text-shadow:none;box-shadow:0 2px 12px rgba(19,33,63,.1)}
+.site-logo{display:flex;flex:none}
+.site-logo img{display:block;width:auto;height:34px;filter:drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 8px rgba(255,255,255,.8));transition:filter .2s}
+.site-hd.is-solid .site-logo img{filter:none}
+.lang-toggle{display:flex;flex:none;padding:2px;border:1px solid currentColor;border-radius:999px}
+.lang-toggle button{border:0;border-radius:999px;background:transparent;color:inherit;font:700 12px/1.4 "Outfit",sans-serif;text-shadow:inherit;padding:5px 9px;cursor:pointer;transition:background .2s,color .2s}
+.lang-toggle button[aria-pressed="true"]{background:#fff;color:var(--ink);text-shadow:none}
+.site-hd.is-solid .lang-toggle button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.site-hd a:focus-visible,.site-hd button:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+#join,#teams,#flow{scroll-margin-top:80px}
+@media (max-width:860px){
+  .site-hd{height:44px;padding:0 12px;gap:8px}
+  .site-logo img{height:28px}
+}
+
+/* ヒーロー: 全幅の写真にタイトル・日時・場所のロックアップを重ねる */
+.hero{background:var(--ai)}
+.shot{position:relative;width:100%;min-height:max(100svh,720px);overflow:hidden;background:#3C7FCB url(img/variants/sora-clear.jpg) center bottom/cover no-repeat;--title-width:min(54vw,780px);--lockup-max-height:46vh;--lockup-scaled-height:calc(var(--title-width) * 829 / 1401)}
+/* ロックアップの中心をヒーローの45%に合わせ、地図とボタンを下に並べる */
+.shot .hero-heading{position:absolute;left:50%;top:calc(45% - min(var(--lockup-scaled-height),var(--lockup-max-height)) / 2);translate:-50% 0;width:var(--title-width);z-index:4;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.shot .title{display:grid;place-items:center;margin:0;width:100%}
+.lockup{display:block;width:auto;height:auto;max-width:100%;max-height:var(--lockup-max-height);filter:drop-shadow(0 0 3px rgba(255,255,255,.9)) drop-shadow(0 0 14px rgba(255,255,255,.75))}
+.hero-venue{display:inline-flex;align-items:center;gap:5px;font-size:14px;line-height:1.5;text-decoration:none;color:#fff;text-shadow:0 2px 3px #13213F,0 0 8px #13213F}
+.hero-venue:focus-visible{outline:3px solid var(--ai);outline-offset:4px}
+.hero-venue [data-lucide]{filter:drop-shadow(0 2px 3px #13213F)}
+.hero-scroll{position:absolute;left:50%;bottom:24px;translate:-50% 0;z-index:4;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);color:var(--ink);box-shadow:0 3px 12px rgba(19,33,63,.18);text-decoration:none}
+.hero-scroll:focus-visible{outline:3px solid var(--ai);outline-offset:4px}
+.hero-scroll [data-lucide]{width:24px;height:24px;animation:scroll-bounce 2s ease-in-out infinite}
+@keyframes scroll-bounce{0%,100%{transform:translateY(-3px)}50%{transform:translateY(3px)}}
+/* 縦のパララックスを雲の横流れ・切手の揺れと分離 */
+.parallax{position:absolute;inset:0;pointer-events:none;translate:0 var(--py,0px)}
+/* 継ぎ目のない雲の画像を4枚並べ、帯の半分を左から右へ流してループ */
+.clouds{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom, #000 0, #000 52%, transparent 68%);
+  mask-image:linear-gradient(to bottom, #000 0, #000 52%, transparent 68%)}
+.cloud-near,.cloud-far{position:absolute;left:0;display:flex;animation:cloud-flow 300s linear infinite}
+.clouds img{display:block;align-self:flex-start;flex:none;width:auto;height:100%;max-height:none;pointer-events:none}
+.cloud-near{top:0;height:80%;width:max-content;z-index:2;filter:drop-shadow(0 24px 30px rgba(20,50,100,.18));animation-delay:-100s}
+.cloud-far{top:46%;height:34%;width:max-content;z-index:1;opacity:.55;filter:blur(1px) saturate(.85);animation-duration:520s;animation-delay:-360s}
+@keyframes cloud-flow{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+/* 切手は中央のタイトル・日時・場所を避け、左右に3枚ずつ */
+.stamps{position:absolute;inset:0;z-index:3;pointer-events:none}
+.stamp{position:absolute;width:clamp(140px,15vw,230px);translate:0 var(--py,0px)}
+.stamps img{display:block;width:100%;height:auto;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(15,30,60,.22));transform:rotate(var(--tilt));animation:stamp-float var(--duration) ease-in-out infinite alternate;animation-delay:var(--delay);opacity:1;scale:1;rotate:0deg;transition:opacity .4s ease,scale .4s ease,rotate .4s ease}
+.stamps img.is-changing{opacity:0;scale:.88;rotate:8deg}
+.stamps .stamp:nth-child(even){width:clamp(132px,14vw,216px)}
+.stamps .stamp:nth-child(1){left:3%;top:12%;--tilt:-4deg;--lift:-8px;--duration:8s;--delay:-2s}
+.stamps .stamp:nth-child(2){right:3%;top:16%;--tilt:4deg;--lift:-10px;--duration:9s;--delay:-6s}
+.stamps .stamp:nth-child(3){left:3%;top:35%;--tilt:4deg;--lift:-12px;--duration:10s;--delay:-5s}
+.stamps .stamp:nth-child(4){right:4%;top:39%;--tilt:-4deg;--lift:-8px;--duration:7s;--delay:-3s}
+.stamps .stamp:nth-child(5){left:3%;top:54%;width:clamp(128px,13vw,200px);--tilt:-3deg;--lift:-10px;--duration:9s;--delay:-7s}
+.stamps .stamp:nth-child(6){right:3%;top:62%;--tilt:4deg;--lift:-12px;--duration:10s;--delay:-1s}
+@keyframes stamp-float{from{translate:0 0}to{translate:0 var(--lift)}}
+@media (prefers-reduced-motion:reduce){
+  .cloud-near,.cloud-far,.stamps img,.hero-scroll [data-lucide]{animation:none}
+  .parallax,.stamp{translate:none}
+  .stamps img{transition:none}
+}
+@media (max-width:860px){
+  .shot{min-height:max(100svh,820px);background-position:center bottom;--title-width:92vw;--lockup-max-height:34vh}
+  .shot .hero-heading{gap:14px}
+  .clouds{
+    -webkit-mask-image:linear-gradient(to bottom, #000 0, #000 62%, transparent 80%);
+    mask-image:linear-gradient(to bottom, #000 0, #000 62%, transparent 80%)}
+  .stamps .stamp:nth-child(n){width:clamp(96px,28vw,140px)}
+  .stamps .stamp:nth-child(1){left:6%;top:6%}
+  .stamps .stamp:nth-child(2){right:6%;top:7%}
+  /* 中央の日時・場所・ボタンの下に切手を置く */
+  .stamps .stamp:nth-child(3){left:6%;top:74%}
+  .stamps .stamp:nth-child(4){right:6%;top:76%}
+  .stamps .stamp:nth-child(5),.stamps .stamp:nth-child(6){display:none}
+}
+
+/* 申し込み帯: 藍の帯に白い波線 */
+.band{position:relative;background:var(--ai) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='28' viewBox='0 0 120 28'%3E%3Cpath d='M0 14 Q15 2 30 14 T60 14 T90 14 T120 14' fill='none' stroke='%23ffffff' stroke-opacity='.16' stroke-width='3'/%3E%3C/svg%3E") 0 0/120px 28px;color:#fff;text-align:center;padding:44px 16px 52px;overflow:hidden;border-top:var(--bd);border-bottom:var(--bd)}
+.band p{margin:8px 0 14px;font-weight:900;letter-spacing:.06em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:0 40px;border-radius:999px;background:var(--cta);color:#fff;text-decoration:none;font-weight:900;font-size:18px;border:4px solid var(--ink);box-shadow:var(--sh);transition:translate .15s,box-shadow .15s}
+.btn:hover{translate:-2px -2px;box-shadow:8px 8px 0 var(--ink)}
+/* 日時・場所の下の申し込みボタン */
+.hero-cta{max-width:100%;text-align:center}
+.band .sub{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:8px 18px;border-radius:999px;background:var(--ki);color:var(--ink);font-weight:700;font-size:14px;border:var(--bd)}
+
+/* セクション */
+.sec{max-width:1080px;margin:0 auto;padding:96px 16px}
+.sec-hd{text-align:center;margin-bottom:44px}
+.sec-hd .en{display:block;font-family:"Outfit";font-weight:800;font-size:13px;letter-spacing:.24em;color:var(--shu)}
+.sec-hd h2{display:inline-block;margin:4px 0 0;font-size:clamp(28px,4vw,42px);font-weight:900;color:var(--ink);background:linear-gradient(transparent 64%,var(--ki) 64%);padding:0 .2em}
+
+/* 募集パネル */
+.panel{position:relative;background:var(--card);border:4px solid var(--ink);border-radius:10px;box-shadow:10px 10px 0 var(--ink);padding:clamp(28px,5vw,64px) clamp(16px,4vw,56px)}
+.floaty{position:absolute;height:auto;pointer-events:none;filter:drop-shadow(0 6px 8px rgba(20,33,61,.12))}
+.floaty.f1{width:clamp(80px,9vw,120px);right:28px;top:24px}
+.floaty.f2{width:clamp(60px,7vw,90px);right:clamp(110px,13vw,170px);top:36px}
+.mem-hd{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 14px;font-family:"Outfit";font-weight:800;font-size:13px;letter-spacing:.16em;color:var(--shu)}
+.memories{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));gap:12px;aspect-ratio:16/7}
+.memories figure{position:relative;margin:0;border:var(--bd);border-radius:6px;overflow:hidden;background:#E6DCC4}
+.memories figure:first-child{grid-row:1/3}
+.memories img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.memories figure:hover img{transform:scale(1.05)}
+.memories figcaption{position:absolute;left:8px;bottom:8px;display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:var(--ki);border:2px solid var(--ink);font-size:12px;font-weight:700;color:var(--ink)}
+.lead{text-align:center;font-weight:700;font-size:clamp(16px,2vw,19px);margin:-20px 0 40px}
+.lead mark{background:linear-gradient(transparent 62%,var(--ki) 62%);color:inherit;padding:0 .1em}
+h3.sub-hd{display:flex;align-items:center;gap:10px;font-size:20px;margin:48px 0 18px}
+h3.sub-hd .n{font-family:"Outfit";font-weight:900;font-size:14px;color:#fff;background:var(--shu);border:2px solid var(--ink);border-radius:6px;padding:1px 9px}
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:20px}
+.type{min-width:0;overflow:hidden;background:#fff;border:var(--bd);border-radius:8px;box-shadow:var(--sh)}
+.type > img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.type > div{padding:20px}
+.type b{font-size:20px}
+.type .badge{display:inline-block;margin-left:8px;font-size:12px;font-weight:700;color:#fff;background:var(--ai);border-radius:999px;padding:2px 10px;vertical-align:3px}
+
+.teams{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.teams.sub{grid-template-columns:repeat(3,1fr);margin-top:16px}
+.team{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 8px 16px;background:#fff;border:var(--bd);border-radius:8px;text-align:center;font-weight:700;cursor:help;outline:none;transition:translate .15s,box-shadow .15s}
+.team:hover,.team:focus-visible{translate:-3px -3px;box-shadow:var(--sh)}
+.team img{display:block;width:100%;height:110px;object-fit:contain}
+html[lang="en"] .team{min-width:0}
+html[lang="en"] .team > [data-i18n]{max-width:100%;overflow-wrap:anywhere}
+.teams.sub .team{display:grid;grid-template-columns:52px minmax(0,1fr);column-gap:12px;row-gap:0;padding:12px 16px;border-style:dashed;background:var(--card);text-align:left;font-size:15px;line-height:1.35}
+.teams.sub .team img{height:52px}
+@media (max-width:860px){
+  .teams.sub{grid-template-columns:1fr}
+}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--ink-2);margin-top:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.step{position:relative;text-align:center;padding:22px 12px;background:#fff;border:var(--bd);border-radius:8px;box-shadow:var(--sh)}
+.step:not(:last-child)::after{content:"";position:absolute;right:-24px;top:50%;width:14px;height:14px;border-top:4px solid var(--ink);border-right:4px solid var(--ink);transform:translateY(-50%) rotate(45deg)}
+.step img{display:block;width:100%;height:120px;margin:12px auto;object-fit:contain}
+.step .k{display:block;font-family:"Outfit";font-weight:900;font-size:13px;letter-spacing:.14em;color:var(--shu)}
+.step b{display:block;font-size:17px}
+
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#fff;border:var(--bd);font-weight:700;font-size:14px;cursor:help;outline:none}
+.chip [data-lucide]{color:var(--ai);font-size:18px}
+.chip a{color:var(--shu)}
+
+.cta-wrap{text-align:center;margin-top:56px}
+.cta-wrap .ok{display:block;margin-top:16px;font-weight:700;color:var(--ink-2)}
+
+/* ツールチップ */
+[data-tip]{position:relative}
+[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,4px);width:max-content;max-width:240px;padding:10px 12px;border-radius:8px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;line-height:1.6;text-align:left;opacity:0;pointer-events:none;transition:.15s;z-index:10}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+
+footer{text-align:center;padding:40px 16px 56px;font-size:13px;color:var(--ink-2)}
+footer a{color:var(--shu)}
+
+@media (max-width:760px){
+  .hero-cta{padding:0 16px;font-size:16px}
+  .teams{grid-template-columns:repeat(3,1fr)}
+  .flow{grid-template-columns:1fr;gap:26px}
+  .step:not(:last-child)::after{right:50%;top:auto;bottom:-20px;transform:translateX(50%) rotate(135deg)}
+  .panel{padding-top:72px}
+  .floaty.f1{width:64px;right:12px;top:10px}
+  .floaty.f2{width:46px;right:70px;top:16px}
+  .memories{grid-template-columns:1fr 1fr;grid-template-rows:auto;aspect-ratio:auto}
+  .memories figure{aspect-ratio:4/3}
+  .memories figure:first-child{grid-row:auto;grid-column:1/3;aspect-ratio:16/9}
+}
+/* 夏空案: 大漁旗案から流用したルールのうち、太い墨線とずらした影を外す */
+.btn{border:0;box-shadow:0 8px 20px rgba(224,64,42,.3)}
+.btn:hover{translate:0 -2px;box-shadow:0 10px 24px rgba(224,64,42,.36)}
+.band{border:0}
+.band .sub{border:0;background:rgba(255,255,255,.16);color:#fff}
+.panel{border:var(--bd);box-shadow:var(--sh);border-radius:24px}
+.type,.step,.team,.chip,.memories figure{border-radius:16px}
+.memories figcaption,h3.sub-hd .n{border:0}
+.team:hover,.team:focus-visible{translate:0 -3px;box-shadow:var(--sh)}
+.teams.sub .team{border:1.5px dashed #B9C9E2}
+.step:not(:last-child)::after{border-color:var(--ai)}
+.memories figcaption{background:#fff}
+.sec-hd h2{background:linear-gradient(transparent 64%,var(--ki) 64%)}
+/* 非表示のツールチップでページ幅が広がらないようにする */
+[data-tip]::after{display:none;max-width:min(240px,80vw)}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{display:block}
+</style>
+</head>
+<body>
+<header class="site-hd">
+  <a class="site-logo" href="#top"><img src="img/logo/header-title.png" width="1385" height="468" alt="PyCon JP 2027" data-i18n-alt="brand"></a>
+  <div class="lang-toggle" role="group" aria-label="言語切り替え" data-i18n-aria-label="languageLabel">
+    <button type="button" data-lang="ja" aria-pressed="true" aria-label="日本語" data-i18n-aria-label="japaneseLabel">JA</button>
+    <button type="button" data-lang="en" aria-pressed="false" aria-label="English">EN</button>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="shot">
+    <div class="clouds" aria-hidden="true">
+      <div class="parallax parallax-far">
+        <div class="cloud-far">
+          <img src="img/variants/cloud-tile.webp" alt="" width="936" height="734">
+          <img src="img/variants/cloud-tile.webp" alt="" width="936" height="734">
+          <img src="img/variants/cloud-tile.webp" alt="" width="936" height="734">
+          <img src="img/variants/cloud-tile.webp" alt="" width="936" height="734">
+        </div>
+      </div>
+      <div class="parallax parallax-near">
+        <div class="cloud-near">
+          <img src="img/variants/cloud-tile.webp" alt="" width="936" height="734">
+          <img src="img/variants/cloud-tile.webp" alt="" width="936" height="734">
+          <img src="img/variants/cloud-tile.webp" alt="" width="936" height="734">
+          <img src="img/variants/cloud-tile.webp" alt="" width="936" height="734">
+        </div>
+      </div>
+    </div>
+    <div class="stamps" aria-hidden="true">
+      <div class="stamp" data-speed="-0.25"><img src="img/retro/stamp-1.webp" alt="" width="560" height="440"></div>
+      <div class="stamp" data-speed="-0.45"><img src="img/retro/stamp-2.webp" alt="" width="560" height="440"></div>
+      <div class="stamp" data-speed="-0.35"><img src="img/retro/stamp-3.webp" alt="" width="560" height="440"></div>
+      <div class="stamp" data-speed="-0.55"><img src="img/retro/stamp-4.webp" alt="" width="560" height="440"></div>
+      <div class="stamp" data-speed="-0.3"><img src="img/retro/stamp-5.webp" alt="" width="560" height="440"></div>
+      <div class="stamp" data-speed="-0.5"><img src="img/retro/stamp-6.webp" alt="" width="560" height="440"></div>
+    </div>
+    <div class="hero-heading">
+      <h1 class="title"><img class="lockup" src="img/logo/lockup-snake-1.png" alt="PyCon JP 2027 2027年9月24日（金）〜26日（日） 静岡・沼津プラサヴェルデ" data-i18n-alt="lockupAlt" width="1401" height="829"></h1>
+      <a class="hero-venue" href="https://www.google.com/maps/search/?api=1&query=%E3%83%97%E3%83%A9%E3%82%B5%E3%83%B4%E3%82%A7%E3%83%AB%E3%83%87" target="_blank" rel="noopener" title="地図を開く" data-i18n-title="mapTitle"><i data-lucide="map-pin" aria-hidden="true"></i><span data-i18n="map">地図を見る</span></a>
+      <a class="btn hero-cta" href="#join" title="運営の経験がなくても大丈夫です" data-i18n-title="noExperience" aria-label="主催メンバーに申し込む（運営の経験がなくても大丈夫です）" data-i18n-aria-label="applyLabel"><i data-lucide="arrow-down" aria-hidden="true"></i><span data-i18n="apply">主催メンバーに申し込む</span></a>
+    </div>
+    <a class="hero-scroll" href="#join" aria-label="下へスクロール" data-i18n-aria-label="scrollDown"><i data-lucide="chevron-down" aria-hidden="true"></i></a>
+  </div>
+</section>
+
+<section class="sec" id="join" style="padding-top:24px">
+  <div class="panel">
+    <img class="floaty f1" src="img/shizuoka/mikan-illust.webp" alt="">
+    <img class="floaty f2" src="img/shizuoka/tealeaf-illust.webp" alt="">
+    <div class="sec-hd"><span class="en">JOIN US</span><h2 data-i18n="joinTitle">主催メンバー募集</h2></div>
+    <p class="lead"><span data-i18n="leadStart">PyCon JP 2027 を</span><mark data-i18n="leadHighlight">いっしょにつくる仲間</mark><span data-i18n="leadEnd">を募集します</span></p>
+
+    <p class="mem-hd"><i data-lucide="camera"></i>PyCon JP 2026 HIROSHIMA</p>
+    <div class="memories">
+      <figure><img src="img/2026/group.jpg" alt="PyCon JP 2026 の参加者とスタッフの集合写真" data-i18n-alt="photoGroupAlt" loading="lazy"><figcaption><i data-lucide="users"></i><span data-i18n="photoGroup">みんなで</span></figcaption></figure>
+      <figure><img src="img/2026/setup.jpg" alt="演台に PyCon JP の幕を取り付けるスタッフ" data-i18n-alt="photoSetupAlt" loading="lazy"><figcaption><i data-lucide="hammer"></i><span data-i18n="photoSetup">会場の設営</span></figcaption></figure>
+      <figure><img src="img/2026/reception.jpg" alt="受付でノベルティを準備するスタッフ" data-i18n-alt="photoReceptionAlt" loading="lazy"><figcaption><i data-lucide="ticket"></i><span data-i18n="photoReception">受付の準備</span></figcaption></figure>
+      <figure><img src="img/2026/prep.jpg" alt="ノートPCで作業するスタッフ" data-i18n-alt="photoPrepAlt" loading="lazy"><figcaption><i data-lucide="laptop"></i><span data-i18n="photoPrep">準備作業</span></figcaption></figure>
+      <figure><img src="img/2026/staff.jpg" alt="スタッフTシャツで打ち合わせするスタッフ" data-i18n-alt="photoStaffAlt" loading="lazy"><figcaption><i data-lucide="message-circle"></i><span data-i18n="photoStaff">当日の運営</span></figcaption></figure>
+    </div>
+
+    <h3 class="sub-hd"><span class="n">01</span><span data-i18n="roles">募集区分</span></h3>
+    <div class="types">
+      <div class="type"><img src="img/2026/core-card.jpg" alt="PyCon JP 2026 のコアスタッフ" data-i18n-alt="corePhotoAlt" loading="lazy"><div><b data-i18n="core">コアスタッフ</b><span class="badge" data-i18n="coreBadge">継続参加</span><br><small data-i18n="coreDetail">企画・準備・当日運営まで</small></div></div>
+      <div class="type"><img src="img/2026/support-card.jpg" alt="PyCon JP 2026 のサポートスタッフ" data-i18n-alt="supportPhotoAlt" loading="lazy"><div><b data-i18n="support">サポートスタッフ</b><span class="badge" data-i18n="supportBadge">できる範囲で</span><br><small data-i18n="supportDetail">タスクと時間帯を選んで</small></div></div>
+    </div>
+
+    <h3 class="sub-hd" id="teams"><span class="n">02</span><span data-i18n="teams">チーム</span></h3>
+    <div class="teams">
+      <div class="team" tabindex="0" data-tip="トークの公募やキーノートなど、イベントの中身づくり" data-i18n-tip="programTip" aria-label="企画：トークの公募やキーノートなど、イベントの中身づくり" data-i18n-aria-label="programLabel"><img src="img/teams/program.webp" alt="" loading="lazy"><span data-i18n="program">企画</span></div>
+      <div class="team" tabindex="0" data-tip="レイアウトや搬入、当日の会場運営" data-i18n-tip="venueTip" aria-label="会場：レイアウトや搬入、当日の会場運営" data-i18n-aria-label="venueLabel"><img src="img/teams/venue.webp" alt="" loading="lazy"><span data-i18n="venue">会場</span></div>
+      <div class="team" tabindex="0" data-tip="チケットや受付、アクセシビリティの支援" data-i18n-tip="attendeesTip" aria-label="参加者：チケットや受付、アクセシビリティの支援" data-i18n-aria-label="attendeesLabel"><img src="img/teams/attendee.webp" alt="" loading="lazy"><span data-i18n="attendees">参加者</span></div>
+      <div class="team" tabindex="0" data-tip="スポンサーの募集やブースの調整" data-i18n-tip="sponsorshipTip" aria-label="協賛：スポンサーの募集やブースの調整" data-i18n-aria-label="sponsorshipLabel"><img src="img/teams/sponsor.webp" alt="" loading="lazy"><span data-i18n="sponsorship">協賛</span></div>
+      <div class="team" tabindex="0" data-tip="ブログの公開、SNSなどでの発信" data-i18n-tip="prTip" aria-label="広報：ブログの公開、SNSなどでの発信" data-i18n-aria-label="prLabel"><img src="img/teams/pr.webp" alt="" loading="lazy"><span data-i18n="pr">広報</span></div>
+    </div>
+    <div class="teams sub">
+      <div class="team" tabindex="0" data-tip="Webサイトやアプリの実装" data-i18n-tip="developmentTip" aria-label="開発：Webサイトやアプリの実装" data-i18n-aria-label="developmentLabel"><img src="img/teams/dev.webp" alt="" loading="lazy"><span data-i18n="development">開発</span></div>
+      <div class="team" tabindex="0" data-tip="ロゴや掲示物のデザイン" data-i18n-tip="designTip" aria-label="デザイン：ロゴや掲示物のデザイン" data-i18n-aria-label="designLabel"><img src="img/teams/design.webp" alt="" loading="lazy"><span data-i18n="design">デザイン</span></div>
+      <div class="team" tabindex="0" data-tip="静岡の業者や地域団体との連携" data-i18n-tip="localTip" aria-label="地域連携：静岡の業者や地域団体との連携" data-i18n-aria-label="localLabel"><img src="img/teams/local.webp" alt="" loading="lazy"><span data-i18n="local">地域連携</span></div>
+    </div>
+    <div class="legend"><span><i data-lucide="circle-check"></i><span data-i18n="primaryTeam">メインを1つ選択</span></span><span><i data-lucide="clock"></i><span data-i18n="teamAssignment">チームは申し込み後に決定</span></span></div>
+
+    <h3 class="sub-hd" id="flow"><span class="n">03</span><span data-i18n="flow">参加の流れ</span></h3>
+    <div class="flow">
+      <div class="step"><span class="k">STEP 1</span><img src="img/teams/step-form.webp" alt="" loading="lazy"><b data-i18n="stepApply">フォームで申し込み</b></div>
+      <div class="step"><span class="k">STEP 2</span><img src="img/teams/step-slack.webp" alt="" loading="lazy"><b data-i18n="stepSlack">Slackに招待</b></div>
+      <div class="step"><span class="k">STEP 3</span><img src="img/teams/step-onboarding.webp" alt="" loading="lazy"><b data-i18n="stepOnboarding">オンボーディング</b></div>
+    </div>
+
+    <h3 class="sub-hd"><span class="n">04</span><span data-i18n="requirements">参加にあたって</span></h3>
+    <div class="chips">
+      <span class="chip" tabindex="0" data-tip="運営スタッフは無償のボランティアとしての参加です" data-i18n-tip="volunteerTip"><i data-lucide="heart-handshake"></i><span data-i18n="volunteer">無償ボランティア</span></span>
+      <span class="chip" tabindex="0" data-tip="日本語で日常会話ができることが必要です" data-i18n-tip="japaneseTip"><i data-lucide="languages"></i><span data-i18n="japanese">日本語で日常会話</span></span>
+      <span class="chip" tabindex="0" data-tip="PyCon JP Code of Conduct への同意をお願いします" data-i18n-tip="conductTip"><i data-lucide="shield-check"></i><a href="https://www.pycon.jp/policies/code-of-conduct.html"><span data-i18n="conduct">行動規範</span></a><span data-i18n="conductAgree">に同意</span></span>
+      <span class="chip" tabindex="0" data-tip="連絡や相談にはSlackを使います" data-i18n-tip="slackTip"><i data-lucide="message-square"></i><span data-i18n="slack">連絡はSlack</span></span>
+      <span class="chip" tabindex="0" data-tip="開催当日の会場までの交通費・宿泊費は、自己負担が発生することもあります" data-i18n-tip="expensesTip"><i data-lucide="train-front"></i><span data-i18n="expenses">交通・宿泊は自己負担の場合あり</span></span>
+    </div>
+
+    <div class="cta-wrap">
+      <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener"><i data-lucide="pen-line"></i><span data-i18n="apply">主催メンバーに申し込む</span></a>
+      <span class="ok" data-i18n="noExperience">運営の経験がなくても大丈夫です</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><i data-lucide="mail"></i> <span data-i18n="contact">お問い合わせ</span> <a href="mailto:contact@pycon.jp">contact@pycon.jp</a></p>
+  <p data-i18n="organizer">主催：一般社団法人PyCon JP Association</p>
+</footer>
+
+<script>
+const translations = {
+  "ja": {
+    "pageTitle": "PyCon JP 2027 案A 夏空",
+    "brand": "PyCon JP 2027",
+    "languageLabel": "言語切り替え",
+    "japaneseLabel": "日本語",
+    "teams": "チーム",
+    "flow": "参加の流れ",
+    "contact": "お問い合わせ",
+    "apply": "主催メンバーに申し込む",
+    "lockupAlt": "PyCon JP 2027 2027年9月24日（金）〜26日（日） 静岡・沼津プラサヴェルデ",
+    "mapTitle": "地図を開く",
+    "scrollDown": "下へスクロール",
+    "map": "地図を見る",
+    "noExperience": "運営の経験がなくても大丈夫です",
+    "applyLabel": "主催メンバーに申し込む（運営の経験がなくても大丈夫です）",
+    "joinTitle": "主催メンバー募集",
+    "leadStart": "PyCon JP 2027 を",
+    "leadHighlight": "いっしょにつくる仲間",
+    "leadEnd": "を募集します",
+    "photoGroupAlt": "PyCon JP 2026 の参加者とスタッフの集合写真",
+    "photoGroup": "みんなで",
+    "photoSetupAlt": "演台に PyCon JP の幕を取り付けるスタッフ",
+    "photoSetup": "会場の設営",
+    "photoReceptionAlt": "受付でノベルティを準備するスタッフ",
+    "photoReception": "受付の準備",
+    "photoPrepAlt": "ノートPCで作業するスタッフ",
+    "photoPrep": "準備作業",
+    "photoStaffAlt": "スタッフTシャツで打ち合わせするスタッフ",
+    "photoStaff": "当日の運営",
+    "roles": "募集区分",
+    "core": "コアスタッフ",
+    "corePhotoAlt": "PyCon JP 2026 のコアスタッフ",
+    "coreBadge": "継続参加",
+    "coreDetail": "企画・準備・当日運営まで",
+    "support": "サポートスタッフ",
+    "supportPhotoAlt": "PyCon JP 2026 のサポートスタッフ",
+    "supportBadge": "できる範囲で",
+    "supportDetail": "タスクと時間帯を選んで",
+    "primaryTeam": "メインを1つ選択",
+    "teamAssignment": "チームは申し込み後に決定",
+    "stepApply": "フォームで申し込み",
+    "stepSlack": "Slackに招待",
+    "stepOnboarding": "オンボーディング",
+    "requirements": "参加にあたって",
+    "volunteerTip": "運営スタッフは無償のボランティアとしての参加です",
+    "volunteer": "無償ボランティア",
+    "japaneseTip": "日本語で日常会話ができることが必要です",
+    "japanese": "日本語で日常会話",
+    "conductTip": "PyCon JP Code of Conduct への同意をお願いします",
+    "conduct": "行動規範",
+    "conductAgree": "に同意",
+    "slackTip": "連絡や相談にはSlackを使います",
+    "slack": "連絡はSlack",
+    "expensesTip": "開催当日の会場までの交通費・宿泊費は、自己負担が発生することもあります",
+    "expenses": "交通・宿泊は自己負担の場合あり",
+    "organizer": "主催：一般社団法人PyCon JP Association",
+    "program": "企画",
+    "programTip": "トークの公募やキーノートなど、イベントの中身づくり",
+    "programLabel": "企画：トークの公募やキーノートなど、イベントの中身づくり",
+    "venue": "会場",
+    "venueTip": "レイアウトや搬入、当日の会場運営",
+    "venueLabel": "会場：レイアウトや搬入、当日の会場運営",
+    "attendees": "参加者",
+    "attendeesTip": "チケットや受付、アクセシビリティの支援",
+    "attendeesLabel": "参加者：チケットや受付、アクセシビリティの支援",
+    "sponsorship": "協賛",
+    "sponsorshipTip": "スポンサーの募集やブースの調整",
+    "sponsorshipLabel": "協賛：スポンサーの募集やブースの調整",
+    "pr": "広報",
+    "prTip": "ブログの公開、SNSなどでの発信",
+    "prLabel": "広報：ブログの公開、SNSなどでの発信",
+    "development": "開発",
+    "developmentTip": "Webサイトやアプリの実装",
+    "developmentLabel": "開発：Webサイトやアプリの実装",
+    "design": "デザイン",
+    "designTip": "ロゴや掲示物のデザイン",
+    "designLabel": "デザイン：ロゴや掲示物のデザイン",
+    "local": "地域連携",
+    "localTip": "静岡の業者や地域団体との連携",
+    "localLabel": "地域連携：静岡の業者や地域団体との連携"
+  },
+  "en": {
+    "pageTitle": "PyCon JP 2027 — Concept A: Summer Sky",
+    "brand": "PyCon JP 2027",
+    "languageLabel": "Language",
+    "japaneseLabel": "Japanese",
+    "teams": "Teams",
+    "flow": "How to join",
+    "contact": "Contact",
+    "apply": "Apply to join",
+    "lockupAlt": "PyCon JP 2027, September 24–26, 2027, Plaza Verde, Numazu, Shizuoka",
+    "mapTitle": "Open map",
+    "scrollDown": "Scroll down",
+    "map": "Map",
+    "noExperience": "No organizing experience needed",
+    "applyLabel": "Apply to join (no organizing experience needed)",
+    "joinTitle": "Join the organizing team",
+    "leadStart": "We’re looking for ",
+    "leadHighlight": "teammates",
+    "leadEnd": " to help create PyCon JP 2027.",
+    "photoGroupAlt": "Group photo of PyCon JP 2026 attendees and organizers",
+    "photoGroup": "Together",
+    "photoSetupAlt": "Organizers attaching a PyCon JP banner to the lectern",
+    "photoSetup": "Venue setup",
+    "photoReceptionAlt": "Organizers preparing giveaways at reception",
+    "photoReception": "Reception prep",
+    "photoPrepAlt": "Organizers working on laptops",
+    "photoPrep": "Preparation",
+    "photoStaffAlt": "Organizers in staff T-shirts coordinating the event",
+    "photoStaff": "Event day",
+    "roles": "Ways to contribute",
+    "core": "Core staff",
+    "corePhotoAlt": "Core staff at PyCon JP 2026",
+    "coreBadge": "Ongoing",
+    "coreDetail": "Planning, preparation and event days",
+    "support": "Support staff",
+    "supportPhotoAlt": "Support staff at PyCon JP 2026",
+    "supportBadge": "At your pace",
+    "supportDetail": "Choose your tasks and time slots",
+    "primaryTeam": "Choose one primary team",
+    "teamAssignment": "Teams are assigned after you apply",
+    "stepApply": "Submit the form",
+    "stepSlack": "Get a Slack invite",
+    "stepOnboarding": "Onboarding",
+    "requirements": "Before you join",
+    "volunteerTip": "All organizing roles are unpaid volunteer positions.",
+    "volunteer": "Unpaid volunteer",
+    "japaneseTip": "You must be able to hold everyday conversations in Japanese.",
+    "japanese": "Conversational Japanese",
+    "conductTip": "You must agree to the PyCon JP Code of Conduct.",
+    "conduct": "Code of Conduct",
+    "conductAgree": " agreement",
+    "slackTip": "We use Slack to communicate and discuss plans.",
+    "slack": "Connect on Slack",
+    "expensesTip": "You may need to cover your own travel and accommodation for the event.",
+    "expenses": "Travel and lodging may be at your expense",
+    "organizer": "Organized by PyCon JP Association",
+    "program": "Program",
+    "programTip": "Shape the program, including the call for proposals and keynotes.",
+    "programLabel": "Program: Shape the program, including the call for proposals and keynotes.",
+    "venue": "Venue",
+    "venueTip": "Plan the layout, coordinate load-in and run the venue on event days.",
+    "venueLabel": "Venue: Plan the layout, coordinate load-in and run the venue on event days.",
+    "attendees": "Attendees",
+    "attendeesTip": "Support ticketing, check-in and accessibility.",
+    "attendeesLabel": "Attendees: Support ticketing, check-in and accessibility.",
+    "sponsorship": "Sponsorship",
+    "sponsorshipTip": "Recruit sponsors and coordinate booths.",
+    "sponsorshipLabel": "Sponsorship: Recruit sponsors and coordinate booths.",
+    "pr": "PR",
+    "prTip": "Publish blog posts and share updates on social media.",
+    "prLabel": "PR: Publish blog posts and share updates on social media.",
+    "development": "Development",
+    "developmentTip": "Build the website and apps.",
+    "developmentLabel": "Development: Build the website and apps.",
+    "design": "Design",
+    "designTip": "Design the logo and signage.",
+    "designLabel": "Design: Design the logo and signage.",
+    "local": "Local relations",
+    "localTip": "Work with local vendors and community groups in Shizuoka.",
+    "localLabel": "Local relations: Work with local vendors and community groups in Shizuoka."
+  }
+};
+
+function setLanguage(language, updateUrl = false) {
+  const messages = translations[language];
+  document.documentElement.lang = language;
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    element.textContent = messages[element.dataset.i18n];
+  });
+  const attributes = {
+    'data-i18n-aria-label': 'aria-label',
+    'data-i18n-tip': 'data-tip',
+    'data-i18n-alt': 'alt',
+    'data-i18n-title': 'title',
+  };
+  Object.entries(attributes).forEach(([marker, attribute]) => {
+    document.querySelectorAll(`[${marker}]`).forEach(element => {
+      element.setAttribute(attribute, messages[element.getAttribute(marker)]);
+    });
+  });
+  document.querySelectorAll('[data-lang]').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.lang === language));
+  });
+  if (updateUrl) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('lang', language);
+    history.replaceState(history.state, '', url);
+  }
+}
+
+function syncLanguageFromUrl() {
+  const language = new URL(window.location.href).searchParams.get('lang');
+  setLanguage(language === 'en' ? 'en' : 'ja');
+}
+
+document.querySelectorAll('[data-lang]').forEach(button => {
+  button.addEventListener('click', () => setLanguage(button.dataset.lang, true));
+});
+window.addEventListener('popstate', syncLanguageFromUrl);
+syncLanguageFromUrl();
+
+const siteHeader = document.querySelector('.site-hd');
+function updateHeader() {
+  siteHeader.classList.toggle('is-solid', window.scrollY > 80);
+}
+window.addEventListener('scroll', updateHeader, { passive: true });
+updateHeader();
+
+const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+const parallaxLayers = [
+  [document.querySelector('.parallax-near'), 0.35],
+  [document.querySelector('.parallax-far'), 0.15],
+  ...Array.from(document.querySelectorAll('.stamps .stamp'), stamp => [stamp, Number(stamp.dataset.speed)]),
+];
+let parallaxFrame = null;
+
+function updateParallax() {
+  parallaxFrame = null;
+  const scrollY = window.scrollY;
+  parallaxLayers.forEach(([layer, speed]) => {
+    layer.style.setProperty('--py', `${scrollY * speed}px`);
+  });
+}
+
+function scheduleParallax() {
+  if (parallaxFrame === null) {
+    parallaxFrame = requestAnimationFrame(updateParallax);
+  }
+}
+
+function syncMotionPreference() {
+  window.removeEventListener('scroll', scheduleParallax);
+  if (parallaxFrame !== null) {
+    cancelAnimationFrame(parallaxFrame);
+    parallaxFrame = null;
+  }
+  if (motionPreference.matches) {
+    parallaxLayers.forEach(([layer]) => layer.style.removeProperty('--py'));
+  } else {
+    window.addEventListener('scroll', scheduleParallax, { passive: true });
+    scheduleParallax();
+  }
+}
+
+motionPreference.addEventListener('change', syncMotionPreference);
+syncMotionPreference();
+
+// stamp-1.webp 〜 stamp-12.webp を先読みし、表示中の6枚と重複しない画像を選ぶ。
+const stampImages = Array.from(document.querySelectorAll('.stamps .stamp img'));
+const stampPool = Array.from({ length: 12 }, (_, index) => {
+  const image = new Image();
+  image.src = `img/retro/stamp-${index + 1}.webp`;
+  return image;
+});
+let stampsReady = false;
+let heroVisible = false;
+let stampInterval = null;
+let stampSwapTimeout = null;
+
+function canSwapStamps() {
+  return stampsReady && heroVisible && !document.hidden && !motionPreference.matches;
+}
+
+function swapStamp() {
+  if (!canSwapStamps()) return;
+  const displayed = new Set(stampImages.map(image => image.src));
+  const available = stampPool.filter(image => !displayed.has(image.src));
+  const image = stampImages[Math.floor(Math.random() * stampImages.length)];
+  const next = available[Math.floor(Math.random() * available.length)];
+  image.classList.add('is-changing');
+  stampSwapTimeout = setTimeout(() => {
+    stampSwapTimeout = null;
+    if (canSwapStamps()) image.src = next.src;
+    image.classList.remove('is-changing');
+  }, 400);
+}
+
+function syncStampRotation() {
+  if (canSwapStamps()) {
+    if (stampInterval === null) stampInterval = setInterval(swapStamp, 4000);
+  } else {
+    clearInterval(stampInterval);
+    stampInterval = null;
+    clearTimeout(stampSwapTimeout);
+    stampSwapTimeout = null;
+    stampImages.forEach(image => image.classList.remove('is-changing'));
+  }
+}
+
+const heroObserver = new IntersectionObserver(([entry]) => {
+  heroVisible = entry.isIntersecting;
+  syncStampRotation();
+});
+heroObserver.observe(document.querySelector('.hero'));
+document.addEventListener('visibilitychange', syncStampRotation);
+motionPreference.addEventListener('change', syncStampRotation);
+Promise.all(stampPool.map(image => image.decode())).then(() => {
+  stampsReady = true;
+  syncStampRotation();
+}).catch(error => console.error('Failed to preload stamp images:', error));
+
+lucide.createIcons();
+</script>
+</body>
+</html>

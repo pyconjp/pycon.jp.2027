@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyCon JP 2027 案A 大漁旗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+/* 大漁旗の配色: 木綿の生成り、墨、藍・朱・黄・松葉。枠は太い墨線と、ずらした影 */
+:root{
+  --bg:#F1E9D6; --ink:#14130F; --ink-2:#4A453C; --card:#FFFDF6;
+  --ai:#1F3577; --shu:#C8281E; --ki:#FFD23F; --matsu:#2E8B57;
+  --cta:#FF4F00;
+  --bd:3px solid var(--ink); --sh:6px 6px 0 var(--ink);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.num{font-family:"Outfit",sans-serif}
+[data-lucide]{width:1em;height:1em;stroke-width:2}
+
+/* header: 白いバー */
+.hd{position:absolute;inset:0 0 auto;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px clamp(16px,3vw,28px);background:var(--card);border-bottom:var(--bd)}
+.logo{display:block;line-height:0}
+.logo img{display:block;width:auto;height:42px}
+.hd-cta{display:inline-flex;align-items:center;gap:8px;background:var(--cta);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;border:var(--bd)}
+
+/* hero: 中央にロゴ、下に日付カードと申し込みボタン。周りに2026の写真と静岡のイラストを置く */
+.hero{position:relative;min-height:max(100svh,760px);overflow:hidden;isolation:isolate}
+.stage{position:absolute;inset:73px 0 0;max-width:1280px;margin:0 auto}
+.stage > *{position:absolute}
+.ph{background:var(--photo) center/cover no-repeat}
+.center{left:50%;top:40%;translate:-50% -50%;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.center .arc{font-weight:700;font-size:clamp(12px,1.4vw,15px);letter-spacing:.14em}
+.title{margin:0;width:100%}
+.title img{display:block;width:100%;height:auto}
+.when{left:50%;top:65%;translate:-50% 0;z-index:12;display:flex;flex-direction:column;align-items:center;gap:16px}
+.date-card{display:block;padding:14px 26px 12px;text-decoration:none;font-family:"Outfit";line-height:1;text-align:left}
+.date-card .y{display:block;font-weight:800;font-size:18px}
+.date-card .d{display:flex;align-items:baseline;gap:6px;margin-top:4px;font-weight:900;font-size:clamp(36px,4.6vw,52px)}
+.date-card .d small{font-size:.32em;font-weight:800;letter-spacing:.04em}
+.date-card .d [data-lucide]{font-size:.5em;align-self:center}
+.date-card .v{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:6px;font-family:"Zen Kaku Gothic New";font-weight:700;font-size:14px}
+.hero-cta{min-height:56px;padding:0 32px;font-size:17px;white-space:nowrap}
+/* 下の募集セクションへスクロールすることを、矢印の小さな上下で示す */
+.hero-cta .down{animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{50%{translate:0 4px}}
+@media (prefers-reduced-motion:reduce){.hero-cta .down{animation:none}}
+/* 静岡のイラスト: 影を付けてゆっくり浮かせる */
+.illu{z-index:8;height:auto;filter:drop-shadow(0 16px 14px rgba(20,33,61,.22));rotate:var(--r,0deg);animation:float var(--d,7s) ease-in-out infinite;animation-delay:var(--dl,0s)}
+@keyframes float{50%{translate:0 -12px}}
+@media (prefers-reduced-motion:reduce){.illu{animation:none}}
+@media (max-width:760px){
+  .hd{padding:10px 14px}
+  .logo img{height:32px}
+  .stage{top:59px}
+  .hd-cta span{display:none}
+  .hero{min-height:760px}
+  .center{top:38%}
+  .when{top:61%}
+  .hero-cta{padding:0 24px;font-size:16px}
+  .sp-hide{display:none}
+  /* 散らす要素は位置の比率を保ったまま縮める */
+  .stage > :not(.center):not(.when){scale:.55;transform-origin:0 0}
+}
+/* 案3 大漁旗: 大漁旗の波・富士・魚・鶴を地に敷き、写真は旗のように太い縁で囲む。
+   旭日旗と同じ図柄になるので、旭光（放射線）は使わない */
+.hero{background:#F1E9D6 url(img/variants/tairyo-bg.jpg) center/cover no-repeat;color:var(--ink)}
+.flag{border:6px solid #fff;outline:3px solid #14130F;box-shadow:8px 8px 0 #14130F}
+.center{width:min(600px,86vw);padding:26px 7% 22px;background:#fff;border:4px solid #14130F;box-shadow:10px 10px 0 #14130F}
+.center .arc{color:#C8281E}
+.date-card{background:#FFD23F;color:#14130F;border:4px solid #14130F;box-shadow:6px 6px 0 #14130F}
+.hero-cta{border:4px solid #14130F;box-shadow:6px 6px 0 #14130F}
+
+/* apply band: 藍の帯に白い波線 */
+.band{position:relative;background:var(--ai) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='28' viewBox='0 0 120 28'%3E%3Cpath d='M0 14 Q15 2 30 14 T60 14 T90 14 T120 14' fill='none' stroke='%23ffffff' stroke-opacity='.16' stroke-width='3'/%3E%3C/svg%3E") 0 0/120px 28px;color:#fff;text-align:center;padding:44px 16px 52px;overflow:hidden;border-top:var(--bd);border-bottom:var(--bd)}
+.band p{margin:8px 0 14px;font-weight:900;letter-spacing:.06em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:0 40px;border-radius:999px;background:var(--cta);color:#fff;text-decoration:none;font-weight:900;font-size:18px;border:4px solid var(--ink);box-shadow:var(--sh);transition:translate .15s,box-shadow .15s}
+.btn:hover{translate:-2px -2px;box-shadow:8px 8px 0 var(--ink)}
+.band .sub{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:8px 18px;border-radius:999px;background:var(--ki);color:var(--ink);font-weight:700;font-size:14px;border:var(--bd)}
+
+/* section */
+.sec{max-width:1080px;margin:0 auto;padding:96px 16px}
+.sec-hd{text-align:center;margin-bottom:44px}
+.sec-hd .en{display:block;font-family:"Outfit";font-weight:800;font-size:13px;letter-spacing:.24em;color:var(--shu)}
+.sec-hd h2{display:inline-block;margin:4px 0 0;font-size:clamp(28px,4vw,42px);font-weight:900;color:var(--ink);background:linear-gradient(transparent 64%,var(--ki) 64%);padding:0 .2em}
+
+/* schedule: 日ごとに藍・松葉・朱の札 */
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.day{position:relative;background:var(--card);border:var(--bd);border-radius:8px;box-shadow:var(--sh);padding:26px 16px 22px;text-align:center}
+.day .m{font-family:"Outfit";font-weight:700;font-size:15px;color:var(--ink-2);letter-spacing:.1em}
+.day .d{font-family:"Outfit";font-weight:900;font-size:clamp(56px,9vw,96px);line-height:1;color:var(--ink)}
+.day .w{display:inline-block;margin-top:8px;font-family:"Outfit";font-weight:800;font-size:14px;letter-spacing:.12em;padding:3px 14px;border-radius:999px;color:#fff;background:var(--ai);border:2px solid var(--ink)}
+.day:nth-child(2) .w{background:var(--matsu)}
+.day:nth-child(3) .w{background:var(--shu)}
+.place{margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;background:var(--card);border:var(--bd);border-radius:8px;box-shadow:var(--sh);padding:22px 26px}
+.place-l{display:flex;align-items:center;gap:16px}
+.ico{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:8px;background:var(--ki);color:var(--ink);font-size:24px;border:var(--bd)}
+.place b{font-size:20px}
+/* 会場名の下の住所。アイコンの入れ物（.ico も span）には効かせない */
+.place-l div > span{display:block;color:var(--ink-2);font-size:14px}
+.ghost{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:999px;border:var(--bd);background:#fff;color:var(--ink);font-weight:700;font-size:14px;text-decoration:none}
+.ghost:hover{background:var(--ki)}
+
+/* recruit panel */
+.panel{position:relative;background:var(--card);border:4px solid var(--ink);border-radius:10px;box-shadow:10px 10px 0 var(--ink);padding:clamp(28px,5vw,64px) clamp(16px,4vw,56px)}
+.floaty{position:absolute;height:auto;pointer-events:none;filter:drop-shadow(0 14px 18px rgba(20,19,15,.2))}
+.floaty.f1{width:clamp(90px,12vw,150px);right:-18px;top:-56px}
+.floaty.f2{width:clamp(70px,9vw,110px);right:clamp(72px,10vw,136px);top:-44px}
+.mem-hd{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 14px;font-family:"Outfit";font-weight:800;font-size:13px;letter-spacing:.16em;color:var(--shu)}
+.memories{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));gap:12px;aspect-ratio:16/7}
+.memories figure{position:relative;margin:0;border:var(--bd);border-radius:6px;overflow:hidden;background:#E6DCC4}
+.memories figure:first-child{grid-row:1/3}
+.memories img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.memories figure:hover img{transform:scale(1.05)}
+.memories figcaption{position:absolute;left:8px;bottom:8px;display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:var(--ki);border:2px solid var(--ink);font-size:12px;font-weight:700;color:var(--ink)}
+.lead{text-align:center;font-weight:700;font-size:clamp(16px,2vw,19px);margin:-20px 0 40px}
+.lead mark{background:linear-gradient(transparent 62%,var(--ki) 62%);color:inherit;padding:0 .1em}
+h3.sub-hd{display:flex;align-items:center;gap:10px;font-size:20px;margin:48px 0 18px}
+h3.sub-hd .n{font-family:"Outfit";font-weight:900;font-size:14px;color:#fff;background:var(--shu);border:2px solid var(--ink);border-radius:6px;padding:1px 9px}
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.type{display:flex;align-items:center;gap:16px;padding:20px;background:#fff;border:var(--bd);border-radius:8px;box-shadow:var(--sh)}
+.type b{font-size:20px}
+.type .badge{display:inline-block;margin-left:8px;font-size:12px;font-weight:700;color:#fff;background:var(--ai);border-radius:999px;padding:2px 10px;vertical-align:3px}
+
+.teams{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.teams.sub{grid-template-columns:repeat(3,1fr);margin-top:16px}
+.team{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 8px 16px;background:#fff;border:var(--bd);border-radius:8px;text-align:center;font-weight:700;cursor:help;outline:none;transition:translate .15s,box-shadow .15s}
+.team:hover,.team:focus-visible{translate:-3px -3px;box-shadow:var(--sh)}
+.team .ti{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--ai);color:#fff;font-size:24px;border:2px solid var(--ink)}
+.team small{font-weight:500;font-size:12px;color:var(--ink-2)}
+.teams.sub .team{border-style:dashed;background:var(--card)}
+.teams.sub .team .ti{background:var(--matsu)}
+.kake{position:absolute;top:-12px;right:10px;font-size:11px;font-weight:800;color:#fff;background:var(--shu);border:2px solid var(--ink);border-radius:999px;padding:0 9px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--ink-2);margin-top:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.step{position:relative;text-align:center;padding:22px 12px;background:#fff;border:var(--bd);border-radius:8px;box-shadow:var(--sh)}
+.step:not(:last-child)::after{content:"";position:absolute;right:-24px;top:50%;width:14px;height:14px;border-top:4px solid var(--ink);border-right:4px solid var(--ink);transform:translateY(-50%) rotate(45deg)}
+.step .si{font-size:30px;color:var(--ai)}
+.step .k{display:block;font-family:"Outfit";font-weight:900;font-size:13px;letter-spacing:.14em;color:var(--shu)}
+.step b{display:block;font-size:17px}
+
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#fff;border:var(--bd);font-weight:700;font-size:14px;cursor:help;outline:none}
+.chip [data-lucide]{color:var(--ai);font-size:18px}
+.chip a{color:var(--shu)}
+
+.cta-wrap{text-align:center;margin-top:56px}
+.cta-wrap .ok{display:block;margin-top:16px;font-weight:700;color:var(--ink-2)}
+
+/* tooltip */
+[data-tip]{position:relative}
+[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,4px);width:max-content;max-width:240px;padding:10px 12px;border-radius:8px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;line-height:1.6;text-align:left;opacity:0;pointer-events:none;transition:.15s;z-index:10}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+
+footer{text-align:center;padding:40px 16px 56px;font-size:13px;color:var(--ink-2)}
+footer a{color:var(--shu)}
+
+@media (max-width:760px){
+  .days{gap:8px}
+  .day{padding:18px 6px 14px}
+  .days{gap:10px}
+  .teams{grid-template-columns:repeat(3,1fr)}
+  .teams.sub{grid-template-columns:repeat(3,1fr)}
+  .flow{grid-template-columns:1fr;gap:26px}
+  .step:not(:last-child)::after{right:50%;top:auto;bottom:-20px;transform:translateX(50%) rotate(135deg)}
+  .floaty.f1{right:-8px;top:-44px}
+  .floaty.f2{right:76px;top:-34px}
+  .memories{grid-template-columns:1fr 1fr;grid-template-rows:auto;aspect-ratio:auto}
+  .memories figure{aspect-ratio:4/3}
+  .memories figure:first-child{grid-row:auto;grid-column:1/3;aspect-ratio:16/9}
+}
+/* hidden tooltips must not widen the page */
+[data-tip]::after{display:none;max-width:min(240px,80vw)}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{display:block}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <a class="logo" href="#top"><img src="img/logo/brush.png" alt="PyCon JP 2027" width="966" height="235"></a>
+  <a class="hd-cta" href="#join"><i data-lucide="users"></i><span>主催メンバー募集</span></a>
+</header>
+
+<section class="hero" id="top">
+  
+  
+  <div class="stage">
+    <div class="ph flag" style="left:5%;top:8%;width:330px;height:230px;--photo:url(img/2026/crowd.jpg);" role="img" aria-label="PyCon JP 2026 の休憩時間の参加者"></div>
+    <div class="ph flag" style="left:69%;top:10%;width:320px;height:225px;--photo:url(img/2026/prep.jpg);" role="img" aria-label="ノートPCで準備作業をするスタッフ"></div>
+    <div class="ph flag sp-hide" style="left:4%;top:50%;width:310px;height:220px;--photo:url(img/2026/staff.jpg);" role="img" aria-label="スタッフTシャツで打ち合わせするスタッフ"></div>
+    <div class="ph flag" style="left:70%;top:52%;width:310px;height:220px;--photo:url(img/2026/reception.jpg);" role="img" aria-label="受付でノベルティを準備するスタッフ"></div>
+    <img class="illu " src="img/shizuoka/nigiri-maguro.webp" alt="" style="left:32%;top:4%;width:88px;--r:-8deg;--d:7s;--dl:-1s">
+    <img class="illu sp-hide" src="img/shizuoka/yunomi.webp" alt="" style="left:92%;top:40%;width:78px;--r:6deg;--d:7.5s;--dl:-4s">
+    <img class="illu " src="img/shizuoka/mikan.webp" alt="" style="left:34%;top:72%;width:92px;--r:0deg;--d:6.5s;--dl:-2s">
+    <img class="illu " src="img/shizuoka/aji.webp" alt="" style="left:58%;top:76%;width:110px;--r:-4deg;--d:8.5s;--dl:-5s">
+    <div class="center">
+      <span class="arc">NUMAZU · SHIZUOKA</span>
+      <h1 class="title"><img src="img/logo/brush.png" alt="PyCon JP 2027" width="966" height="235"></h1>
+    </div>
+    <div class="when">
+      <a class="date-card" href="https://www.google.com/maps/search/?api=1&query=%E3%83%97%E3%83%A9%E3%82%B5%E3%83%B4%E3%82%A7%E3%83%AB%E3%83%87" target="_blank" rel="noopener" aria-label="2027年9月24日金曜日から26日日曜日、沼津プラサヴェルデ（地図を開く）">
+        <span class="y">2027</span>
+        <span class="d">9.24<small>FRI</small><i data-lucide="arrow-right"></i>9.26<small>SUN</small></span>
+        <span class="v"><i data-lucide="map-pin"></i>@沼津プラサヴェルデ</span>
+      </a>
+      <a class="btn hero-cta" href="#join">主催メンバー募集<i class="down" data-lucide="arrow-down"></i></a>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <p>＼ いっしょにつくろう ／</p>
+  <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener"><i data-lucide="pen-line"></i>主催メンバーに申し込む</a>
+  <br>
+  <span class="sub"><i data-lucide="sparkles"></i>運営の経験がなくても大丈夫</span>
+</section>
+
+<section class="sec" id="schedule">
+  <div class="sec-hd"><span class="en">SCHEDULE</span><h2>開催日程</h2></div>
+  <div class="days">
+    <div class="day"><div class="m">2027.09</div><div class="d">24</div><span class="w">FRI</span></div>
+    <div class="day"><div class="m">2027.09</div><div class="d">25</div><span class="w">SAT</span></div>
+    <div class="day"><div class="m">2027.09</div><div class="d">26</div><span class="w">SUN</span></div>
+  </div>
+  <div class="place">
+    <div class="place-l"><span class="ico"><i data-lucide="map-pin"></i></span><div><b>沼津プラサヴェルデ</b><span>静岡県沼津市</span></div></div>
+    <a class="ghost" href="https://www.google.com/maps/search/?api=1&query=%E3%83%97%E3%83%A9%E3%82%B5%E3%83%B4%E3%82%A7%E3%83%AB%E3%83%87" target="_blank" rel="noopener"><i data-lucide="map"></i>地図</a>
+  </div>
+</section>
+
+<section class="sec" id="join" style="padding-top:24px">
+  <div class="panel">
+    <img class="floaty f1" src="img/shizuoka/mikan.webp" alt="">
+    <img class="floaty f2" src="img/shizuoka/tealeaf.webp" alt="">
+    <div class="sec-hd"><span class="en">JOIN US</span><h2>主催メンバー募集</h2></div>
+    <p class="lead">PyCon JP 2027 を<mark>いっしょにつくる仲間</mark>を募集します</p>
+
+    <p class="mem-hd"><i data-lucide="camera"></i>PyCon JP 2026 HIROSHIMA</p>
+    <div class="memories">
+      <figure><img src="img/2026/group.jpg" alt="PyCon JP 2026 の参加者とスタッフの集合写真" loading="lazy"><figcaption><i data-lucide="users"></i>みんなで</figcaption></figure>
+      <figure><img src="img/2026/setup.jpg" alt="演台に PyCon JP の幕を取り付けるスタッフ" loading="lazy"><figcaption><i data-lucide="hammer"></i>会場の設営</figcaption></figure>
+      <figure><img src="img/2026/reception.jpg" alt="受付でノベルティを準備するスタッフ" loading="lazy"><figcaption><i data-lucide="ticket"></i>受付の準備</figcaption></figure>
+      <figure><img src="img/2026/prep.jpg" alt="ノートPCで作業するスタッフ" loading="lazy"><figcaption><i data-lucide="laptop"></i>準備作業</figcaption></figure>
+      <figure><img src="img/2026/staff.jpg" alt="スタッフTシャツで打ち合わせするスタッフ" loading="lazy"><figcaption><i data-lucide="message-circle"></i>当日の運営</figcaption></figure>
+    </div>
+
+    <h3 class="sub-hd"><span class="n">01</span>募集区分</h3>
+    <div class="types">
+      <div class="type"><span class="ico"><i data-lucide="flame"></i></span><div><b>コアスタッフ</b><span class="badge">継続参加</span><br><small>企画・準備・当日運営まで</small></div></div>
+      <div class="type"><span class="ico"><i data-lucide="hand-helping"></i></span><div><b>サポートスタッフ</b><span class="badge">できる範囲で</span><br><small>タスクと時間帯を選んで</small></div></div>
+    </div>
+
+    <h3 class="sub-hd"><span class="n">02</span>チーム</h3>
+    <div class="teams">
+      <div class="team" tabindex="0" data-tip="トークの公募やキーノートなど、イベントの中身づくり" aria-label="企画：トークの公募やキーノートなど、イベントの中身づくり"><span class="ti"><i data-lucide="presentation"></i></span>企画<small>トーク・企画</small></div>
+      <div class="team" tabindex="0" data-tip="レイアウトや搬入、当日の会場運営" aria-label="会場：レイアウトや搬入、当日の会場運営"><span class="ti"><i data-lucide="building-2"></i></span>会場<small>会場づくり</small></div>
+      <div class="team" tabindex="0" data-tip="チケットや受付、アクセシビリティの支援" aria-label="参加者：チケットや受付、アクセシビリティの支援"><span class="ti"><i data-lucide="ticket"></i></span>参加者<small>チケット・受付</small></div>
+      <div class="team" tabindex="0" data-tip="スポンサーの募集やブースの調整" aria-label="協賛：スポンサーの募集やブースの調整"><span class="ti"><i data-lucide="handshake"></i></span>協賛<small>スポンサー</small></div>
+      <div class="team" tabindex="0" data-tip="ブログの公開、SNSなどでの発信" aria-label="広報：ブログの公開、SNSなどでの発信"><span class="ti"><i data-lucide="megaphone"></i></span>広報<small>Web・SNS</small></div>
+    </div>
+    <div class="teams sub">
+      <div class="team" tabindex="0" data-tip="Webサイトやアプリの実装" aria-label="開発（かけもち）：Webサイトやアプリの実装"><span class="kake">かけもち</span><span class="ti"><i data-lucide="code"></i></span>開発<small>Web・アプリ</small></div>
+      <div class="team" tabindex="0" data-tip="ロゴや掲示物のデザイン" aria-label="デザイン（かけもち）：ロゴや掲示物のデザイン"><span class="kake">かけもち</span><span class="ti"><i data-lucide="palette"></i></span>デザイン<small>ロゴ・掲示物</small></div>
+      <div class="team" tabindex="0" data-tip="静岡の業者や地域団体との連携" aria-label="地域連携（かけもち）：静岡の業者や地域団体との連携"><span class="kake">かけもち</span><span class="ti"><i data-lucide="map-pinned"></i></span>地域連携<small>静岡とつなぐ</small></div>
+    </div>
+    <div class="legend"><span><i data-lucide="circle-check"></i>メインを1つ選択</span><span><i data-lucide="plus"></i>かけもちは任意</span><span><i data-lucide="clock"></i>チームは申し込み後に決定</span></div>
+
+    <h3 class="sub-hd"><span class="n">03</span>参加の流れ</h3>
+    <div class="flow">
+      <div class="step"><span class="k">STEP 1</span><i class="si" data-lucide="file-pen-line"></i><b>フォームで申し込み</b></div>
+      <div class="step"><span class="k">STEP 2</span><i class="si" data-lucide="message-circle"></i><b>Slackに招待</b></div>
+      <div class="step"><span class="k">STEP 3</span><i class="si" data-lucide="compass"></i><b>オンボーディング</b></div>
+    </div>
+
+    <h3 class="sub-hd"><span class="n">04</span>参加にあたって</h3>
+    <div class="chips">
+      <span class="chip" tabindex="0" data-tip="運営スタッフは無償のボランティアとしての参加です"><i data-lucide="heart-handshake"></i>無償ボランティア</span>
+      <span class="chip" tabindex="0" data-tip="日本語で日常会話ができることが必要です"><i data-lucide="languages"></i>日本語で日常会話</span>
+      <span class="chip" tabindex="0" data-tip="PyCon JP Code of Conduct への同意をお願いします"><i data-lucide="shield-check"></i><a href="https://www.pycon.jp/policies/code-of-conduct.html">行動規範</a>に同意</span>
+      <span class="chip" tabindex="0" data-tip="連絡や相談にはSlackを使います"><i data-lucide="message-square"></i>連絡はSlack</span>
+      <span class="chip" tabindex="0" data-tip="開催当日の会場までの交通費・宿泊費は、自己負担が発生することもあります"><i data-lucide="train-front"></i>交通・宿泊は自己負担の場合あり</span>
+    </div>
+
+    <div class="cta-wrap">
+      <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener"><i data-lucide="pen-line"></i>主催メンバーに申し込む</a>
+      <span class="ok">運営の経験がなくても大丈夫です</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><i data-lucide="mail"></i> お問い合わせ <a href="mailto:contact@pycon.jp">contact@pycon.jp</a></p>
+  <p>主催：一般社団法人PyCon JP Association</p>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

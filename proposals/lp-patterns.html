@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>周年LPパターン集</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{--bg:#F4F6F5;--card:#fff;--ink:#14213D;--sub:#5A6474;--acc:#1688D4;--ref:#FF4F00;--tag:#EEF2F4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7}
+a{color:var(--acc)}
+[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-.12em}
+main{max-width:1240px;margin:0 auto;padding:40px 16px 72px}
+h1{margin:0;font-size:26px}
+.meta{margin:4px 0 20px;color:var(--sub);font-size:14px}
+.filters{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;padding:10px 0;background:var(--bg)}
+.filters button{border:1.5px solid #D5DCE3;background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.filters button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+h2{display:flex;align-items:center;gap:8px;margin:36px 0 14px;font-size:20px}
+h2 small{font-size:13px;font-weight:500;color:var(--sub)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:18px}
+.site{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);display:flex;flex-direction:column}
+.site.ref{outline:3px solid var(--ref)}
+.shots{position:relative;background:#DDE3E8}
+.shots .pc{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
+.shots .sp{position:absolute;right:10px;bottom:-26px;width:22%;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:10px;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.body{padding:14px 18px 18px}
+.name{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-weight:900;font-size:17px;padding-right:24%}
+.badge{font-size:11px;font-weight:700;border-radius:999px;padding:1px 9px;background:var(--tag);color:var(--sub)}
+.badge.ref{background:var(--ref);color:#fff}
+.badge.end{background:#FDECEC;color:#B3261E}
+.url{font-size:12px;word-break:break-all}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tags span{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--tag)}
+.tags span.hit{background:#FFE9DC;color:#B4400B}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--sub);margin:4px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i.sw{display:inline-block;width:14px;height:14px;border-radius:999px;background:#FFE9DC}
+footer{margin-top:40px;font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+<main>
+  <h1>周年LPパターン集</h1>
+  <p class="meta">参考の PBR LENDING 3周年感謝祭と、周年・感謝祭の特設LP 10件。PC 1280×800 / スマホ 390×844 で 2026-10-16 に撮影。候補は <a href="https://rdlp.jp/lp-archive/">LPアーカイブ</a> の「周年」「感謝祭」「アニバーサリー」検索から選びました。</p>
+  <p class="legend"><span><i class="sw"></i>参考LPと共通する要素</span></p>
+  <div class="filters" id="filters"></div>
+  <div id="list"></div>
+  <footer>JRE POINT と グーンマーク大感謝祭はキャンペーン終了後のページで、終了告知が上に重なっています。ママ振・姉振 大感謝祭は周年ではなく、振袖フェアのLPです。</footer>
+</main>
+<script>
+const PATTERNS = {
+  ref: { title: '参考', note: '' },
+  number: { title: '周年数字が主役', note: '大きな周年数字をロゴやマークにして中央に置く' },
+  offer: { title: '特典・期間を大きく', note: '特典の金額や期間を最大の文字で見せる' },
+  visual: { title: '世界観ビジュアル', note: 'イラストやキャラクター、写真で世界観を作る' },
+};
+const SITES = [
+  { id: 'pbr', p: 'ref', name: 'PBR LENDING 3周年感謝祭', where: '暗号資産', url: 'https://portobelloroad.co.jp/lp/3rd-anniv/user/',
+    tags: ['装飾タイポの題字', '特大の期間表示', '光の筋＋3Dオブジェクト', '特典3つのカード', '巨大英字の帯'], ref: true },
+  { id: 'lululun', p: 'number', name: 'lululun 15周年', where: '化粧品', url: 'https://lululun.com/shop/pages/lululun_15th',
+    tags: ['中央の巨大な「15」', '人物と商品が周りに浮かぶ', 'ぼかした色玉', 'ピンク基調'], hit: ['人物と商品が周りに浮かぶ'] },
+  { id: 'jrepoint', p: 'number', name: 'JRE POINT ありがとう10周年', where: 'ポイント', url: 'https://www.jrepoint.jp/10th-anniversary/', end: true,
+    tags: ['立体の「10」', '紙吹雪とリボン', '黄緑の地', 'CTA2つ'] },
+  { id: 'mintia', p: 'number', name: 'ミンティア 30周年', where: '菓子', url: 'https://www.mintia.jp/30th/',
+    tags: ['白抜きの「30TH」マーク', '雪山のイラスト背景', 'グラデーションの帯', '企画ボタンを並べる'], hit: ['グラデーションの帯'] },
+  { id: 'lohaco', p: 'number', name: 'LOHACO 10周年', where: 'EC', url: 'https://lohaco.yahoo.co.jp/special/event/10th_anniversary/',
+    tags: ['「10th」のロゴ', '撮影した立体セット', 'ケーキと紙飾り', '写真が主役'] },
+  { id: 'otabe', p: 'number', name: 'おたべ 60周年', where: '和菓子', url: 'https://www.otabe.kyoto.jp/anniversary/60th/',
+    tags: ['「60」のロゴマーク', '余白の多いミニマル', '赤1色', 'オープニング演出'] },
+  { id: 'zelda', p: 'number', name: 'ゼルダの伝説 40周年', where: 'ゲーム', url: 'https://www.nintendo.com/jp/character/zelda/index.html',
+    tags: ['盾形の「40」エンブレム', '三角形の画像モザイク', '濃い緑', 'ニュースカード'] },
+  { id: 'yamato', p: 'offer', name: 'ヤマト住建 39周年サンキューキャンペーン', where: '住宅', url: 'https://www.yamatojk.co.jp/39campaign',
+    tags: ['極太の黒縁文字', '「最大100万円分」を最大に', '放射線と紙吹雪', 'キャラクター', '期限バッジ'], hit: ['「最大100万円分」を最大に', '期限バッジ'] },
+  { id: 'goon', p: 'offer', name: 'グーンマーク大感謝祭', where: '日用品', url: 'https://www.elleair.jp/goo-n/campaign/goo-n_pointcampaign/', end: true,
+    tags: ['ガーランドの祝祭', '濃い地に黄色の見出し', '期間を大きく', '抽選コースの一覧'], hit: ['期間を大きく'] },
+  { id: 'persona', p: 'visual', name: 'ペルソナ30周年 × フェリシモ', where: 'グッズ', url: 'https://www.felissimo.co.jp/persona/persona_cha.html',
+    tags: ['斜めの帯とキャラ切り抜き', '英字を斜めに積む', '赤黒の強い配色', '大きな通し番号'] },
+  { id: 'furisode', p: 'visual', name: 'ママ振・姉振 大感謝祭', where: '振袖', url: 'https://furisode-event.com/mamalp_fair_2304/',
+    tags: ['人物写真を大きく', '縦書きのコピー', '実績バッジ', '和の配色'] },
+];
+const filters = document.getElementById('filters');
+const list = document.getElementById('list');
+let current = 'all';
+const keys = ['all', ...Object.keys(PATTERNS)];
+keys.forEach(k => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.dataset.k = k;
+  b.textContent = k === 'all' ? `すべて ${SITES.length}` : `${PATTERNS[k].title} ${SITES.filter(s => s.p === k).length}`;
+  b.onclick = () => { current = k; render(); };
+  filters.appendChild(b);
+});
+function card(s) {
+  const hit = new Set(s.hit || []);
+  return `<article class="site${s.ref ? ' ref' : ''}">
+    <div class="shots"><img class="pc" src="img/lp10/${s.id}-pc.jpg" alt="${s.name} のPC表示" loading="lazy"><img class="sp" src="img/lp10/${s.id}-sp.jpg" alt="${s.name} のスマホ表示" loading="lazy"></div>
+    <div class="body">
+      <div class="name">${s.name}${s.ref ? '<span class="badge ref">参考</span>' : ''}<span class="badge">${s.where}</span>${s.end ? '<span class="badge end">終了</span>' : ''}</div>
+      <a class="url" href="${s.url}" target="_blank" rel="noopener">${s.url.replace(/^https?:\/\//, '')}</a>
+      <div class="tags">${s.tags.map(t => `<span class="${hit.has(t) ? 'hit' : ''}">${t}</span>`).join('')}</div>
+    </div>
+  </article>`;
+}
+function render() {
+  filters.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === current));
+  list.innerHTML = Object.entries(PATTERNS)
+    .filter(([k]) => current === 'all' || current === k)
+    .map(([k, v]) => `<h2>${v.title}${v.note ? ` <small>${v.note}</small>` : ''}</h2><div class="grid">${SITES.filter(s => s.p === k).map(card).join('')}</div>`)
+    .join('');
+}
+render();
+lucide.createIcons();
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>類似LP比較</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{--bg:#F4F6F5;--card:#fff;--ink:#14213D;--sub:#5A6474;--line:#E2E7EA;--acc:#1688D4;--ours:#FF4F00}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7}
+a{color:var(--acc)}
+[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-.12em}
+main{max-width:1240px;margin:0 auto;padding:40px 16px 72px}
+h1{margin:0;font-size:26px}
+.meta{margin:4px 0 28px;color:var(--sub);font-size:14px}
+h2{margin:48px 0 16px;font-size:20px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:18px}
+.site{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);display:flex;flex-direction:column}
+.site.ours{outline:3px solid var(--ours)}
+.shots{position:relative;background:#DDE3E8}
+.shots .pc{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
+.shots .sp{position:absolute;right:10px;bottom:-26px;width:22%;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:10px;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.body{padding:16px 18px 20px}
+.name{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:900;font-size:18px;padding-right:24%}
+.name .where{font-size:12px;font-weight:700;color:var(--sub);background:var(--bg);border-radius:999px;padding:1px 10px}
+.name .tag-ours{font-size:12px;color:#fff;background:var(--ours);border-radius:999px;padding:1px 10px}
+.url{font-size:12px;word-break:break-all}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:12px 0 0;font-size:14px}
+dt{display:flex;align-items:center;gap:6px;color:var(--sub);font-weight:700;white-space:nowrap}
+dd{margin:0}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;font-size:14px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+thead th{background:#EEF2F4;font-size:13px;white-space:nowrap}
+tbody th{white-space:nowrap}
+tr.ours th,tr.ours td{background:#FFF4EE}
+.yes{color:#0E8A5F;font-weight:700}
+.no{color:var(--sub)}
+.table-wrap{overflow-x:auto;border-radius:14px}
+.tips{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.tips li{background:var(--card);border-radius:16px;padding:18px}
+.tips b{display:flex;align-items:center;gap:8px;font-size:16px;margin-bottom:6px}
+.tips b .n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-size:13px;flex:none}
+.tips p{margin:0;font-size:14px;color:var(--sub)}
+.tips .src{display:block;margin-top:8px;font-size:12px}
+footer{margin-top:40px;font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+<main>
+  <h1>類似LP比較</h1>
+  <p class="meta">日本のコミュニティ主催の技術カンファレンス5件と案Aのファーストビューを比較 ・ 2026-10-16 時点で撮影（PC 1280×800 / スマホ 390×844）</p>
+
+  <h2><i data-lucide="layout-grid"></i>ファーストビュー</h2>
+  <div class="grid">
+    <article class="site ours">
+      <div class="shots"><img class="pc" src="img/ref/ours-pc.jpg" alt="案AのPC表示"><img class="sp" src="img/ref/ours-sp.jpg" alt="案Aのスマホ表示"></div>
+      <div class="body">
+        <div class="name">PyCon JP 2027 案A<span class="tag-ours">今回</span><span class="where">沼津</span></div>
+        <dl>
+          <dt><i data-lucide="image"></i>背景</dt><dd>2026の集合写真を全面に、無加工</dd>
+          <dt><i data-lucide="type"></i>題字</dt><dd>筆文字ロゴ</dd>
+          <dt><i data-lucide="map-pin"></i>開催地</dt><dd>富士山・湯呑み・寿司などの小物を散らす</dd>
+          <dt><i data-lucide="calendar"></i>日付</dt><dd>輪郭だけの大きな数字＋曜日バッジ</dd>
+          <dt><i data-lucide="mouse-pointer-click"></i>CTA</dt><dd>ヘッダー右上の「主催メンバー募集」のみ</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="site">
+      <div class="shots"><img class="pc" src="img/ref/rubykaigi-pc.jpg" alt="RubyKaigi 2026 のPC表示"><img class="sp" src="img/ref/rubykaigi-sp.jpg" alt="RubyKaigi 2026 のスマホ表示"></div>
+      <div class="body">
+        <div class="name">RubyKaigi 2026<span class="where">函館</span></div>
+        <a class="url" href="https://rubykaigi.org/2026/">rubykaigi.org/2026</a>
+        <dl>
+          <dt><i data-lucide="image"></i>背景</dt><dd>赤レンガの壁の写真＋白い線の幾何学模様</dd>
+          <dt><i data-lucide="type"></i>題字</dt><dd>白抜きの大きな英字</dd>
+          <dt><i data-lucide="map-pin"></i>開催地</dt><dd>レンガの質感で土地を表す（人物写真なし）</dd>
+          <dt><i data-lucide="calendar"></i>日付</dt><dd>曜日を小さく添えた大きな数字、会場2つに地図リンク</dd>
+          <dt><i data-lucide="mouse-pointer-click"></i>CTA</dt><dd>過去回へのリンクのみ</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="site">
+      <div class="shots"><img class="pc" src="img/ref/yapc-pc.jpg" alt="YAPC::Tokyo 2026 のPC表示"><img class="sp" src="img/ref/yapc-sp.jpg" alt="YAPC::Tokyo 2026 のスマホ表示"></div>
+      <div class="body">
+        <div class="name">YAPC::Tokyo 2026<span class="where">東京</span></div>
+        <a class="url" href="https://yapcjapan.org/2026tokyo/">yapcjapan.org/2026tokyo</a>
+        <dl>
+          <dt><i data-lucide="image"></i>背景</dt><dd>白地に切り絵風のカラフルな色面</dd>
+          <dt><i data-lucide="type"></i>題字</dt><dd>中央の白い円にロゴ</dd>
+          <dt><i data-lucide="map-pin"></i>開催地</dt><dd>会場の東京ビッグサイトを切り抜いて配置</dd>
+          <dt><i data-lucide="calendar"></i>日付</dt><dd>白いカードに「11.27 FRI → 11.29 SUN @東京ビッグサイト」</dd>
+          <dt><i data-lucide="mouse-pointer-click"></i>CTA</dt><dd>なし</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="site">
+      <div class="shots"><img class="pc" src="img/ref/droidkaigi-pc.jpg" alt="DroidKaigi 2026 のPC表示"><img class="sp" src="img/ref/droidkaigi-sp.jpg" alt="DroidKaigi 2026 のスマホ表示"></div>
+      <div class="body">
+        <div class="name">DroidKaigi 2026<span class="where">東京</span></div>
+        <a class="url" href="https://2026.droidkaigi.jp/">2026.droidkaigi.jp</a>
+        <dl>
+          <dt><i data-lucide="image"></i>背景</dt><dd>過去回の写真をグリッドに並べ、暗い青緑で覆う</dd>
+          <dt><i data-lucide="type"></i>題字</dt><dd>細身のロゴを小さめに</dd>
+          <dt><i data-lucide="map-pin"></i>開催地</dt><dd>「Tokyo, Japan」の文字のみ</dd>
+          <dt><i data-lucide="calendar"></i>日付</dt><dd>ロゴ下に等幅の小さな文字</dd>
+          <dt><i data-lucide="mouse-pointer-click"></i>CTA</dt><dd>なし</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="site">
+      <div class="shots"><img class="pc" src="img/ref/iosdc-pc.jpg" alt="iOSDC Japan 2026 のPC表示"><img class="sp" src="img/ref/iosdc-sp.jpg" alt="iOSDC Japan 2026 のスマホ表示"></div>
+      <div class="body">
+        <div class="name">iOSDC Japan 2026<span class="where">東京</span></div>
+        <a class="url" href="https://iosdc.jp/2026/">iosdc.jp/2026</a>
+        <dl>
+          <dt><i data-lucide="image"></i>背景</dt><dd>濃い青に回路基板の模様</dd>
+          <dt><i data-lucide="type"></i>題字</dt><dd>中央に線画風のロゴ</dd>
+          <dt><i data-lucide="map-pin"></i>開催地</dt><dd>会場名の文字のみ</dd>
+          <dt><i data-lucide="calendar"></i>日付</dt><dd>ロゴ下に「9.11 FRI » 9.13 SUN」</dd>
+          <dt><i data-lucide="mouse-pointer-click"></i>CTA</dt><dd>スポンサー募集中・チケット販売中・タイムテーブルの3ボタン</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="site">
+      <div class="shots"><img class="pc" src="img/ref/pythonasia-pc.jpg" alt="PythonAsia 2026 のPC表示"><img class="sp" src="img/ref/pythonasia-sp.jpg" alt="PythonAsia 2026 のスマホ表示"></div>
+      <div class="body">
+        <div class="name">PythonAsia 2026<span class="where">マニラ</span></div>
+        <a class="url" href="https://2026.pythonasia.org/">2026.pythonasia.org</a>
+        <dl>
+          <dt><i data-lucide="image"></i>背景</dt><dd>クリーム色の紙の質感、下からキャラクターがのぞく</dd>
+          <dt><i data-lucide="type"></i>題字</dt><dd>極太のロゴと「2026」をオレンジで大きく</dd>
+          <dt><i data-lucide="map-pin"></i>開催地</dt><dd>現地の言葉「KALINGA / CARE」と文字風の装飾</dd>
+          <dt><i data-lucide="calendar"></i>日付</dt><dd>「MARCH 21-23, 2026」を大きく1行で</dd>
+          <dt><i data-lucide="mouse-pointer-click"></i>CTA</dt><dd>プログラムとリマインダーの2ボタン</dd>
+        </dl>
+      </div>
+    </article>
+  </div>
+
+  <h2><i data-lucide="table"></i>観点別</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th></th><th>人物写真</th><th>写真の加工</th><th>開催地の表し方</th><th>基調の色</th><th>ヒーロー内CTA</th></tr></thead>
+    <tbody>
+      <tr class="ours"><th>案A</th><td class="yes">あり（1枚）</td><td>なし</td><td>小物を多数</td><td>青緑グラデ＋オレンジ＋写真の色</td><td class="no">なし</td></tr>
+      <tr><th>RubyKaigi</th><td class="no">なし</td><td>—</td><td>壁の質感</td><td>赤茶＋白</td><td class="no">なし</td></tr>
+      <tr><th>YAPC::Tokyo</th><td class="yes">あり（複数）</td><td>不定形に切り抜き</td><td>会場の建物</td><td>白地＋原色</td><td class="no">なし</td></tr>
+      <tr><th>DroidKaigi</th><td class="yes">あり（多数）</td><td>暗い色で覆う</td><td>文字のみ</td><td>暗い青緑</td><td class="no">なし</td></tr>
+      <tr><th>iOSDC</th><td class="yes">あり（複数）</td><td>円形に切り抜き</td><td>文字のみ</td><td>濃い青＋黄緑</td><td class="yes">3つ</td></tr>
+      <tr><th>PythonAsia</th><td class="no">なし</td><td>—</td><td>言葉と文字</td><td>クリーム＋オレンジ</td><td class="yes">2つ</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2><i data-lucide="lightbulb"></i>案Aへの示唆</h2>
+  <ul class="tips">
+    <li><b><span class="n">1</span>写真は加工して背景に下げる</b><p>人物写真を使う3件は、どれも切り抜くか色をかぶせている。無加工の1枚を全面に敷いているのは案Aだけで、題字と写真が張り合っている。</p><span class="src">参考: DroidKaigi（色で覆う）、YAPC・iOSDC（切り抜き）</span></li>
+    <li><b><span class="n">2</span>開催地らしさは1つに絞る</b><p>壁の質感、会場の建物、現地の言葉と、どれも1つの要素で土地を伝えている。案Aは小物の数が多く、何の土地かが一目で伝わりにくい。</p><span class="src">参考: RubyKaigi、YAPC、PythonAsia</span></li>
+    <li><b><span class="n">3</span>目的のボタンをヒーローに置く</b><p>iOSDCとPythonAsiaはファーストビューにボタンがある。案Aは募集が目的なのに、ヒーロー内に申し込みボタンがない。</p><span class="src">参考: iOSDC、PythonAsia</span></li>
+    <li><b><span class="n">4</span>色は1〜2色を基調にする</b><p>5件とも基調は1〜2色。案Aはグラデーション、オレンジ、写真、小物の色が重なっている。</p></li>
+    <li><b><span class="n">5</span>会場に地図リンクを付ける</b><p>RubyKaigiは会場名の横に地図リンクがある。案Aの会場ピルにも付けられる。</p><span class="src">参考: RubyKaigi</span></li>
+  </ul>
+
+  <footer>スタッフ募集をトップページに大きく出しているサイトは5件中なし。iOSDC と DroidKaigi はスタッフ一覧を載せている。</footer>
+</main>
+<script>lucide.createIcons();</script>
+</body>
+</html>

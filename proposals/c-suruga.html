@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyCon JP 2027 案C Suruga Blue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --navy:#0A1630; --navy-2:#13254A; --paper:#F6F3EC; --ink:#0F1A2E; --ink-2:#56607A; --line:#DCD6C8;
+  --gold:#E7B77A; --peach:#F2C6A0; --sea:#2D5B8C;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans JP",sans-serif;line-height:1.8;font-size:15px;overflow-x:hidden}
+a{color:inherit}
+.serif{font-family:"Shippori Mincho B1",serif}
+.en{font-family:"Cormorant Garamond",serif}
+[data-lucide]{width:1em;height:1em;stroke-width:1.75}
+
+/* hero */
+.hero{position:relative;min-height:100svh;color:#fff;background:var(--navy) url(img/c-hero.jpg) center 35%/cover no-repeat;display:flex;flex-direction:column;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,48,.35) 0%,rgba(10,22,48,0) 30%,rgba(10,22,48,.25) 55%,rgba(10,22,48,.92) 100%)}
+.top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:20px clamp(16px,4vw,48px)}
+.top .mark{font-family:"Cormorant Garamond";font-weight:600;font-size:20px;letter-spacing:.06em}
+.top a.join{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.08em;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.6);padding-bottom:2px}
+.vert{position:absolute;z-index:2;right:clamp(16px,6vw,96px);top:96px;writing-mode:vertical-rl;font-family:"Shippori Mincho B1";font-weight:700;font-size:clamp(20px,2.4vw,30px);letter-spacing:.4em;text-shadow:0 2px 20px rgba(0,0,0,.25)}
+.hero-b{position:relative;z-index:2;margin-top:auto;padding:0 clamp(16px,4vw,48px) clamp(32px,6vh,64px);display:grid;grid-template-columns:auto 1fr;gap:24px 56px;align-items:end}
+.hero-b h1{margin:0;font-family:"Cormorant Garamond";font-weight:500;font-size:clamp(44px,7vw,96px);line-height:.95;letter-spacing:.01em}
+.hero-b h1 i{display:block;font-style:italic;color:var(--peach)}
+.when{border-left:1px solid rgba(255,255,255,.4);padding-left:clamp(16px,3vw,40px)}
+.when .big{display:flex;align-items:baseline;gap:.3em;font-family:"Cormorant Garamond";font-weight:500;font-size:clamp(56px,9vw,128px);line-height:.9;letter-spacing:-.01em}
+.when .big small{font-size:.28em;letter-spacing:.2em;color:var(--peach)}
+.when .row{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:14px;font-size:14px;letter-spacing:.06em}
+.when .row span{display:inline-flex;align-items:center;gap:8px}
+
+/* days band */
+.daysband{background:var(--navy);color:#fff;padding:0 clamp(16px,4vw,48px)}
+.days{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.18)}
+.d{padding:28px 0 40px;text-align:left}
+.d + .d{border-left:1px solid rgba(255,255,255,.18);padding-left:clamp(12px,3vw,40px)}
+.d .k{font-size:11px;letter-spacing:.3em;color:var(--gold)}
+.d .n{font-family:"Cormorant Garamond";font-weight:500;font-size:clamp(48px,7vw,88px);line-height:1}
+.d .w{font-family:"Cormorant Garamond";font-style:italic;font-size:clamp(18px,2vw,24px);color:#B9C4DA}
+.venue{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;padding:28px 0 64px;border-top:1px solid rgba(255,255,255,.18)}
+.venue b{font-family:"Shippori Mincho B1";font-size:clamp(20px,2.4vw,26px);font-weight:700}
+.venue span{display:block;color:#B9C4DA;font-size:13px;letter-spacing:.08em}
+.line-btn{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-size:13px;letter-spacing:.1em;border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:10px 20px}
+
+/* editorial */
+.ed{max-width:1200px;margin:0 auto;padding:112px clamp(16px,4vw,48px) 40px}
+.ed-hd{display:grid;grid-template-columns:1fr 1.3fr;gap:32px;align-items:end;border-bottom:1px solid var(--ink);padding-bottom:28px}
+.ed-hd .lab{font-family:"Cormorant Garamond";font-style:italic;font-size:22px;color:var(--sea)}
+.ed-hd h2{margin:0;font-family:"Shippori Mincho B1";font-weight:800;font-size:clamp(36px,5.6vw,72px);line-height:1.2;letter-spacing:.04em}
+.ed-hd p{margin:0;font-family:"Shippori Mincho B1";font-size:clamp(16px,1.8vw,20px);line-height:2}
+.blk{display:grid;grid-template-columns:200px 1fr;gap:24px;padding:44px 0;border-bottom:1px solid var(--line)}
+.blk .no{font-family:"Cormorant Garamond";font-size:56px;line-height:1;color:var(--sea)}
+.blk .no small{display:block;font-family:"Noto Sans JP";font-size:13px;letter-spacing:.12em;color:var(--ink);margin-top:8px;font-weight:700}
+
+.types{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.type{padding:4px 28px 4px 0}
+.type + .type{border-left:1px solid var(--line);padding-left:28px}
+.type h3{margin:0;font-family:"Shippori Mincho B1";font-size:26px;font-weight:800}
+.type .tg{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tg span{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:4px 12px;border:1px solid var(--line);border-radius:999px;background:#fff}
+
+.tlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:0 16px;border-top:1px solid var(--line)}
+.tlist.kk{grid-template-columns:repeat(3,1fr);border-top:0}
+.tlist li{display:flex;align-items:center;gap:12px;padding:18px 12px 18px 0;border-bottom:1px solid var(--line);cursor:help;outline:none;font-family:"Shippori Mincho B1";font-weight:700;font-size:19px;transition:color .15s}
+.tlist li:hover,.tlist li:focus-visible{color:var(--sea)}
+.tlist li [data-lucide]{flex:none;font-size:22px;color:var(--sea)}
+.tlist li.k [data-lucide]{color:#B07A3C}
+.tlist li em{margin-left:auto;font-style:normal;font-family:"Noto Sans JP";font-size:11px;font-weight:700;color:#B07A3C;border:1px solid #E3C9A6;border-radius:999px;padding:0 8px}
+.tnote{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:14px;font-size:13px;color:var(--ink-2)}
+.tnote span{display:inline-flex;align-items:center;gap:6px}
+
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:0;counter-reset:s}
+.flow div{position:relative;padding:0 24px 0 0}
+.flow div + div{padding-left:24px;border-left:1px solid var(--line)}
+.flow .s{font-family:"Cormorant Garamond";font-style:italic;font-size:20px;color:var(--sea)}
+.flow b{display:flex;align-items:center;gap:8px;font-family:"Shippori Mincho B1";font-size:19px}
+
+.notes{display:flex;flex-wrap:wrap;gap:10px}
+.notes span{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:700;cursor:help;outline:none}
+.notes [data-lucide]{color:var(--sea);font-size:16px}
+
+/* cta */
+.cta{position:relative;margin-top:96px;color:#fff;background:linear-gradient(90deg,rgba(10,22,48,.95),rgba(10,22,48,.55)),url(img/c-hero.jpg) center 80%/cover}
+.cta a{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;padding:72px clamp(16px,4vw,48px);text-decoration:none}
+.cta .t{font-family:"Shippori Mincho B1";font-weight:800;font-size:clamp(26px,4vw,48px);line-height:1.4}
+.cta .t small{display:block;font-family:"Noto Sans JP";font-weight:500;font-size:14px;color:var(--peach);letter-spacing:.08em}
+.cta .arrow{display:grid;place-items:center;width:88px;height:88px;border-radius:50%;border:1px solid rgba(255,255,255,.6);font-size:32px;transition:.2s}
+.cta a:hover .arrow{background:#fff;color:var(--navy)}
+
+/* tooltip */
+[data-tip]{position:relative}
+[data-tip]::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 6px);transform:translateY(4px);width:max-content;max-width:240px;padding:9px 12px;border-radius:8px;background:var(--navy);color:#fff;font-family:"Noto Sans JP";font-size:12px;font-weight:500;line-height:1.6;opacity:0;pointer-events:none;transition:.15s;z-index:10}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translateY(0)}
+
+footer{background:var(--navy);color:#B9C4DA;font-size:12px;letter-spacing:.04em}
+footer .in{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 32px;padding:28px clamp(16px,4vw,48px)}
+footer a{color:#fff}
+
+@media (max-width:860px){
+  .vert{top:72px;font-size:18px}
+  .hero-b{grid-template-columns:1fr}
+  .when{border-left:0;padding-left:0;border-top:1px solid rgba(255,255,255,.4);padding-top:18px}
+  .ed-hd,.blk{grid-template-columns:1fr}
+  .blk{gap:16px}
+  .types{grid-template-columns:1fr}
+  .type + .type{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px;margin-top:20px}
+  .tlist,.tlist.kk{grid-template-columns:1fr 1fr}
+  .flow{grid-template-columns:1fr;gap:18px}
+  .flow div + div{border-left:0;padding-left:0}
+}
+/* hidden tooltips must not widen the page */
+[data-tip]::after{display:none;max-width:min(240px,80vw)}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{display:block}
+</style>
+</head>
+<body>
+
+<section class="hero" id="top">
+  <div class="top">
+    <span class="mark">PyCon JP 2027</span>
+    <a class="join" href="#join">主催メンバー募集<i data-lucide="arrow-down-right"></i></a>
+  </div>
+  <div class="vert" aria-hidden="true">静岡・沼津</div>
+  <div class="hero-b">
+    <h1>PyCon JP<i>2027</i></h1>
+    <div class="when">
+      <div class="big">24–26<small>SEP 2027</small></div>
+      <div class="row">
+        <span><i data-lucide="calendar"></i>2027年9月24日（金）〜26日（日）</span>
+        <span><i data-lucide="map-pin"></i>沼津プラサヴェルデ</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="daysband" id="schedule" aria-label="開催日程">
+  <div class="days">
+    <div class="d"><div class="k">DAY 1</div><div class="n">09.24</div><div class="w">Friday</div></div>
+    <div class="d"><div class="k">DAY 2</div><div class="n">09.25</div><div class="w">Saturday</div></div>
+    <div class="d"><div class="k">DAY 3</div><div class="n">09.26</div><div class="w">Sunday</div></div>
+  </div>
+  <div class="venue">
+    <div><b>沼津プラサヴェルデ</b><span>静岡県沼津市</span></div>
+    <a class="line-btn" href="https://www.google.com/maps/search/?api=1&query=%E3%83%97%E3%83%A9%E3%82%B5%E3%83%B4%E3%82%A7%E3%83%AB%E3%83%87" target="_blank" rel="noopener"><i data-lucide="map"></i>MAP</a>
+  </div>
+</section>
+
+<section class="ed" id="join">
+  <div class="ed-hd">
+    <div><div class="lab">Join us</div><h2>主催メンバー<br>募集</h2></div>
+    <p>PyCon JP 2027 を、いっしょにつくる人を募集します。<br>運営の経験がなくても大丈夫です。</p>
+  </div>
+
+  <div class="blk">
+    <div class="no">01<small>募集区分</small></div>
+    <div class="types">
+      <div class="type">
+        <h3>コアスタッフ</h3>
+        <div class="tg"><span><i data-lucide="repeat"></i>継続参加</span><span><i data-lucide="flag"></i>企画〜当日運営</span><span tabindex="0" data-tip="定期的なミーティングとSlackでの相談を通して準備を進めます"><i data-lucide="calendar-check"></i>定例ミーティング</span></div>
+      </div>
+      <div class="type">
+        <h3>サポートスタッフ</h3>
+        <div class="tg"><span><i data-lucide="list-checks"></i>タスクを選ぶ</span><span><i data-lucide="clock"></i>時間帯を選ぶ</span><span tabindex="0" data-tip="準備期間中の特定の作業や、開催当日の運営など、できる範囲で運営を支えます"><i data-lucide="heart"></i>できる範囲で</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="no">02<small>チーム</small></div>
+    <div>
+      <ul class="tlist">
+        <li tabindex="0" data-tip="トークの公募やキーノートなど、イベントの中身づくり"><i data-lucide="presentation"></i>企画</li>
+        <li tabindex="0" data-tip="レイアウトや搬入、当日の会場運営"><i data-lucide="building-2"></i>会場</li>
+        <li tabindex="0" data-tip="チケットや受付、アクセシビリティの支援"><i data-lucide="ticket"></i>参加者</li>
+        <li tabindex="0" data-tip="スポンサーの募集やブースの調整"><i data-lucide="handshake"></i>協賛</li>
+        <li tabindex="0" data-tip="ブログの公開、SNSなどでの発信"><i data-lucide="megaphone"></i>広報</li>
+      </ul>
+      <ul class="tlist kk">
+        <li class="k" tabindex="0" data-tip="Webサイトやアプリの実装"><i data-lucide="code"></i>開発<em>かけもち</em></li>
+        <li class="k" tabindex="0" data-tip="ロゴや掲示物のデザイン"><i data-lucide="palette"></i>デザイン<em>かけもち</em></li>
+        <li class="k" tabindex="0" data-tip="静岡の業者や地域団体との連携"><i data-lucide="map-pinned"></i>地域連携<em>かけもち</em></li>
+      </ul>
+      <div class="tnote"><span><i data-lucide="circle-check"></i>メインは1つ選択</span><span><i data-lucide="plus"></i>かけもちは任意</span><span><i data-lucide="clock"></i>チームは申し込み後に決定</span></div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="no">03<small>参加の流れ</small></div>
+    <div class="flow">
+      <div><span class="s">Step one</span><b><i data-lucide="file-pen-line"></i>フォームで申し込み</b></div>
+      <div><span class="s">Step two</span><b><i data-lucide="message-circle"></i>Slackに招待</b></div>
+      <div><span class="s">Step three</span><b><i data-lucide="compass"></i>オンボーディング</b></div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="no">04<small>参加にあたって</small></div>
+    <div class="notes">
+      <span tabindex="0" data-tip="運営スタッフは無償のボランティアとしての参加です"><i data-lucide="heart-handshake"></i>無償ボランティア</span>
+      <span tabindex="0" data-tip="日本語で日常会話ができることが必要です"><i data-lucide="languages"></i>日本語で日常会話</span>
+      <span tabindex="0" data-tip="PyCon JP Code of Conduct への同意をお願いします"><i data-lucide="shield-check"></i><a href="https://www.pycon.jp/policies/code-of-conduct.html">行動規範</a>に同意</span>
+      <span tabindex="0" data-tip="連絡や相談にはSlackを使います"><i data-lucide="message-square"></i>連絡はSlack</span>
+      <span tabindex="0" data-tip="開催当日の会場までの交通費・宿泊費は、自己負担が発生することもあります"><i data-lucide="train-front"></i>交通・宿泊は自己負担の場合あり</span>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSeluA5A-C0fEkgnqk82qqx9Vdf0RKjtgnkOx9NIE3ZFRiI5KA/viewform" target="_blank" rel="noopener">
+    <span class="t"><small>APPLY</small>主催メンバーに申し込む</span>
+    <span class="arrow"><i data-lucide="arrow-up-right"></i></span>
+  </a>
+</section>
+
+<footer>
+  <div class="in">
+    <span>主催：一般社団法人PyCon JP Association</span>
+    <span>お問い合わせ：<a href="mailto:contact@pycon.jp">contact@pycon.jp</a></span>
+  </div>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>
