@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyCon JP 2027 デザイン案一覧</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F5F2;--ink:#1A1F2C;--ink-2:#5A6070;--card:#fff;--accent:#176399}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",sans-serif;line-height:1.7}
+main{max-width:1180px;margin:0 auto;padding:40px 16px 64px}
+h1{margin:0 0 24px;font-size:clamp(22px,4vw,28px);overflow-wrap:anywhere}
+h2{margin:32px 0 14px;font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:20px}
+a.card{display:flex;min-width:0;flex-direction:column;align-items:flex-start;padding:24px;background:var(--card);border-radius:16px;text-decoration:none;color:inherit;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow-wrap:anywhere;transition:transform .15s}
+a.card:hover{transform:translateY(-3px)}
+a.card:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.card h3{margin:0;font-size:18px}
+.card p{margin:8px 0 18px;font-size:14px;color:var(--ink-2)}
+.open{margin-top:auto;font-size:14px;color:var(--accent)}
+a.featured{padding:clamp(24px,5vw,40px);background:#E7F3FB}
+.featured h2{margin:12px 0 0;font-size:clamp(26px,5vw,36px)}
+.badge{display:inline-block;padding:3px 12px;border-radius:999px;background:var(--accent);color:#fff;font-size:12px}
+@media(prefers-reduced-motion:reduce){a.card{transition:none}a.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1>PyCon JP 2027 デザイン案一覧</h1>
+  <a class="card featured" href="/">
+    <span class="badge">公開中</span>
+    <h2>決定版：夏空</h2>
+    <p>夏空と雲が彩る開催のご案内</p>
+    <span class="open">公開中のトップへ <span aria-hidden="true">→</span></span>
+  </a>
+
+  <section aria-labelledby="initial-heading">
+    <h2 id="initial-heading">初期3案</h2>
+    <div class="grid">
+      <a class="card" href="/drafts/initial.html">
+        <h3>初期3案の一覧</h3><p>異なる三つの方向性を見比べる</p><span class="open">一覧を見る <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="card" href="/drafts/a-kinetic.html">
+        <h3>案A 光と3D</h3><p>光と立体感で描くにぎやかな港</p><span class="open">案を見る <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="card" href="/drafts/b-warm.html">
+        <h3>案B 手描きの港</h3><p>手描きのぬくもりで迎える港</p><span class="open">案を見る <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="card" href="/drafts/c-suruga.html">
+        <h3>案C 駿河湾エディトリアル</h3><p>富士と駿河湾を端正に見せる</p><span class="open">案を見る <span aria-hidden="true">→</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section aria-labelledby="variants-heading">
+    <h2 id="variants-heading">案Aの地の表現</h2>
+    <div class="grid">
+      <a class="card" href="/drafts/a-variants.html">
+        <h3>地の表現 3案の比較</h3><p>同じ骨格で背景の表現を比べる</p><span class="open">比較を見る <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="card" href="/drafts/a-chart.html">
+        <h3>海図</h3><p>等深線と丸窓で駿河湾を描く</p><span class="open">案を見る <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="card" href="/drafts/a-hanga.html">
+        <h3>版画</h3><p>藍と朱の木版画で富士を描く</p><span class="open">案を見る <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="card" href="/drafts/a-tairyo.html">
+        <h3>大漁旗</h3><p>鮮やかな旗で港の活気を表現</p><span class="open">案を見る <span aria-hidden="true">→</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section aria-labelledby="logo-heading">
+    <h2 id="logo-heading">ロゴ</h2>
+    <div class="grid">
+      <a class="card" href="/drafts/logo-options.html">
+        <h3>ロゴ文字3案</h3><p>筆文字と波とレトロの三方向</p><span class="open">ロゴを見る <span aria-hidden="true">→</span></span>
+      </a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Build only a-sora.html and its referenced images, using the standard library."""
+"""Build the public top page and selected drafts, using the standard library."""
 
 import re
 import shutil
 from html import unescape
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -11,11 +12,27 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[2]
 PROPOSALS = ROOT / "proposals"
 SITE = ROOT / "site"
+DRAFT_PAGES = {
+    "drafts-index.html": "index.html",
+    "index.html": "initial.html",
+    "a-kinetic.html": "a-kinetic.html",
+    "b-warm.html": "b-warm.html",
+    "c-suruga.html": "c-suruga.html",
+    "a-variants.html": "a-variants.html",
+    "a-chart.html": "a-chart.html",
+    "a-hanga.html": "a-hanga.html",
+    "a-tairyo.html": "a-tairyo.html",
+    "logo-options.html": "logo-options.html",
+}
+FORBIDDEN_PATHS = ("lp10", "cp10", "ev10", "/ref/", "type-preview")
+FORBIDDEN_PAGES = (
+    "lp-compare.html", "lp-patterns.html", "campaign-lps.html", "events.html",
+)
 
 # Covers HTML src/srcset, CSS url(), and quoted JS paths. Keep ${...}
 # together so whitespace in an interpolation does not truncate the reference.
 IMAGE_REFERENCE = re.compile(
-    r"(?<![\w/.-])img/(?:\$\{[^}]*\}|[^\s\"'`()<>,$])+"
+    r"(?<![\w/.-])(?:img|thumbs)/(?:\$\{[^}]*\}|[^\s\"'`()<>,$])+"
 )
 ARRAY_FROM = re.compile(
     r"Array\.from\(\s*\{\s*length:\s*(\d+)\s*\}\s*,\s*"
@@ -67,8 +84,8 @@ def image_references(html: str) -> set[str]:
         if "${" in reference:
             raise ValueError(f"Unsupported image template: {reference}")
         path = unquote(urlsplit(unescape(reference)).path)
-        if ".." in Path(path).parts or not path.startswith("img/"):
-            raise ValueError(f"Image path escapes img/: {reference}")
+        if ".." in Path(path).parts or not path.startswith(("img/", "thumbs/")):
+            raise ValueError(f"Image path escapes img/ or thumbs/: {reference}")
         paths.add(path)
     return paths
 
@@ -76,10 +93,90 @@ def image_references(html: str) -> set[str]:
 def validate_images(directory: Path, references: set[str]) -> None:
     for reference in sorted(references):
         image = directory / reference
-        if not image.resolve().is_relative_to((directory / "img").resolve()):
-            raise ValueError(f"Image path escapes img/: {image}")
+        allowed = [directory / name for name in ("img", "thumbs")]
+        if not any(image.resolve().is_relative_to(root.resolve()) for root in allowed):
+            raise ValueError(f"Image path escapes img/ or thumbs/: {image}")
         if not image.is_file():
             raise FileNotFoundError(f"Referenced image does not exist: {image}")
+
+
+class PageLinks(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.links: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in ("a", "area"):
+            self.links.extend(value for name, value in attrs if name == "href" and value)
+
+
+def validate_public_paths(paths: set[str]) -> None:
+    for path in sorted(paths):
+        if any(token in f"/{path.lower()}" for token in FORBIDDEN_PATHS):
+            raise ValueError(f"Forbidden public file: {path}")
+
+
+def validate_draft_html(html: str, page: str) -> None:
+    # Check the entire HTML so JS-generated links cannot bypass the check.
+    decoded = unquote(unescape(html)).lower()
+    for forbidden in FORBIDDEN_PAGES:
+        if forbidden in decoded:
+            raise ValueError(f"Forbidden comparison page in {page}: {forbidden}")
+
+
+def validate_draft_links(directory: Path, html: str, page: str) -> None:
+    parser = PageLinks()
+    parser.feed(html)
+    for href in parser.links:
+        url = urlsplit(href)
+        if url.scheme or url.netloc or not url.path:
+            continue
+        path = unquote(url.path)
+        if path == "/":
+            target = SITE / "index.html"
+        else:
+            target = SITE / path.lstrip("/") if path.startswith("/") else directory / path
+            if not target.resolve().is_relative_to(directory.resolve()):
+                raise ValueError(f"Link escapes drafts in {page}: {href}")
+            if target.is_dir():
+                target /= "index.html"
+        if not target.is_file():
+            raise FileNotFoundError(f"Missing link target in {page}: {href}")
+
+
+def build_drafts() -> list[Path]:
+    directory = SITE / "drafts"
+    references = set()
+    for source, destination in DRAFT_PAGES.items():
+        html = (PROPOSALS / source).read_text(encoding="utf-8")
+        validate_draft_html(html, source)
+        references.update(image_references(html))
+    expected = set(DRAFT_PAGES.values()) | references
+    validate_public_paths(expected)
+    validate_images(PROPOSALS, references)
+
+    directory.mkdir()
+    for source, destination in DRAFT_PAGES.items():
+        shutil.copy2(PROPOSALS / source, directory / destination)
+    for reference in sorted(references):
+        destination = directory / reference
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(PROPOSALS / reference, destination)
+
+    # Validate the copied HTML and assets, including every local navigation link.
+    output_references = set()
+    for page in DRAFT_PAGES.values():
+        html = (directory / page).read_text(encoding="utf-8")
+        validate_draft_html(html, page)
+        validate_draft_links(directory, html, page)
+        output_references.update(image_references(html))
+    validate_images(directory, output_references)
+    files = [path for path in directory.rglob("*") if path.is_file()]
+    actual = {path.relative_to(directory).as_posix() for path in files}
+    validate_public_paths(actual)
+    if actual != set(DRAFT_PAGES.values()) | output_references:
+        raise ValueError("Draft output files do not match the pages' references")
+    return files
 
 
 def main() -> None:
@@ -105,8 +202,11 @@ def main() -> None:
     expected = {"index.html"} | output_references
     if {path.relative_to(SITE).as_posix() for path in files} != expected:
         raise ValueError("Output files do not match the page's references")
-    size = sum(path.stat().st_size for path in files)
-    print(f"Copied {len(files)} files ({len(output_references)} images): {size:,} bytes")
+    draft_files = build_drafts()
+    validate_public_paths({path.relative_to(SITE).as_posix() for path in files + draft_files})
+    for label, group in (("Top (excluding drafts)", files), ("Drafts", draft_files)):
+        size = sum(path.stat().st_size for path in group)
+        print(f"{label}: {len(group)} files, {size:,} bytes")
 
 
 if __name__ == "__main__":
