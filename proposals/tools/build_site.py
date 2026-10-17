@@ -190,6 +190,13 @@ def main() -> None:
     references = image_references(source.read_text(encoding="utf-8"))
     validate_images(PROPOSALS, references)
     shutil.copy2(source, SITE / "index.html")
+    (SITE / "_headers").write_text(
+        "/img/*\n"
+        "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800\n"
+        "/drafts/img/*\n"
+        "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800\n",
+        encoding="utf-8",
+    )
     for reference in sorted(references):
         destination = SITE / reference
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -199,7 +206,7 @@ def main() -> None:
     output_references = image_references((SITE / "index.html").read_text(encoding="utf-8"))
     validate_images(SITE, output_references)
     files = [path for path in SITE.rglob("*") if path.is_file()]
-    expected = {"index.html"} | output_references
+    expected = {"index.html", "_headers"} | output_references
     if {path.relative_to(SITE).as_posix() for path in files} != expected:
         raise ValueError("Output files do not match the page's references")
     draft_files = build_drafts()
