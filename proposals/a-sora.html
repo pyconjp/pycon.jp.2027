@@ -84,7 +84,7 @@ a{color:inherit}
   .stamps img{transition:none}
 }
 @media (max-width:860px){
-  .shot{min-height:max(100svh,820px);background-position:center bottom;--title-width:92vw;--lockup-max-height:34vh}
+  .shot{min-height:max(100svh,820px);background-position:88% bottom;--title-width:92vw;--lockup-max-height:34vh}
   .shot .hero-heading{gap:14px}
   .clouds{
     -webkit-mask-image:linear-gradient(to bottom, #000 0, #000 62%, transparent 80%);
@@ -92,9 +92,9 @@ a{color:inherit}
   .stamps .stamp:nth-child(n){width:clamp(96px,28vw,140px)}
   .stamps .stamp:nth-child(1){left:6%;top:6%}
   .stamps .stamp:nth-child(2){right:6%;top:7%}
-  /* 中央の日時・場所・ボタンの下に切手を置く */
-  .stamps .stamp:nth-child(3){left:6%;top:74%}
-  .stamps .stamp:nth-child(4){right:6%;top:76%}
+  /* 下段の切手は富士山にかけないよう、画面下端の海の上に置く */
+  .stamps .stamp:nth-child(3){left:6%;top:auto;bottom:14px}
+  .stamps .stamp:nth-child(4){right:6%;top:auto;bottom:14px}
   .stamps .stamp:nth-child(5),.stamps .stamp:nth-child(6){display:none}
 }
 
