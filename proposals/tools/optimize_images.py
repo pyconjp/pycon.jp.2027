@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a-sora's WebP assets without changing the draft pages' originals.
+"""Generate WebP assets for a-sora and the draft pages without changing originals.
 
 Run with: python3 proposals/tools/optimize_images.py
 Requires Pillow with WebP support. Every run starts from the original images.
@@ -15,7 +15,7 @@ OUTPUT = IMAGES / "web"
 
 
 def image_jobs():
-    """Yield (source, destination, resize axis, size, quality) for this page only."""
+    """Yield (source relative to IMAGES, destination, resize axis, size, quality)."""
     for width in (1401, 800):
         yield "logo/lockup-snake-1.png", f"logo/lockup-snake-1-{width}.webp", "width", width, 88
     yield "logo/header-title.png", "logo/header-title.webp", "height", 102, 90
@@ -36,6 +36,23 @@ def image_jobs():
     for name in ("mikan-illust", "tealeaf-illust"):
         path = f"shizuoka/{name}.webp"
         yield path, path, "longest", 280, 80
+
+    # Drafts reuse the existing 2026 photos above; only crowd needs new sizes.
+    for width in (1280, 640):
+        yield "2026/crowd.jpg", f"2026/crowd-{width}.webp", "width", width, 78
+    for name in (
+        "variants/tairyo-bg", "b-hero", "variants/hanga-bg", "c-hero", "b-team",
+        "logo/retro", "logo/wave", "logo/brush",
+    ):
+        yield f"{name}.jpg", f"{name}.webp", "width", 1376, 78
+    for name in ("tairyo", "hanga", "chart"):
+        for device in ("pc", "sp"):
+            path = f"variants/shots/a-{name}-{device}"
+            yield f"{path}.jpg", f"{path}.webp", None, None, 80
+    for name in ("a-kinetic", "b-warm", "c-suruga"):
+        yield f"../thumbs/{name}.jpg", f"thumbs/{name}.webp", None, None, 80
+    # Keep the transparent lockup separate from the full brush.jpg logo option.
+    yield "logo/brush.png", "logo/brush-transparent.webp", None, None, 88
 
 
 def main() -> None:
