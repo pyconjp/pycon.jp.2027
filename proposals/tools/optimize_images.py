@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Generate WebP assets for a-sora and the draft pages without changing originals.
+"""Generate WebP and AVIF assets without changing originals.
 
 Run with: python3 proposals/tools/optimize_images.py
-Requires Pillow with WebP support. Every run starts from the original images.
+Requires Pillow with WebP and AVIF support. Every run starts from the original images.
 """
 
 from pathlib import Path
@@ -18,9 +18,12 @@ def image_jobs():
     """Yield (source relative to IMAGES, destination, resize axis, size, quality)."""
     for width in (1401, 800):
         yield "logo/lockup-snake-1.png", f"logo/lockup-snake-1-{width}.webp", "width", width, 88
+        yield "logo/lockup-snake-1.png", f"logo/lockup-snake-1-{width}.avif", "width", width, 60
     yield "logo/header-title.png", "logo/header-title.webp", "height", 102, 90
     yield "variants/sora-clear.jpg", "variants/sora-clear.webp", "width", 1200, 80
+    yield "variants/sora-clear.jpg", "variants/sora-clear.avif", "width", 1200, 50
     yield "variants/cloud-tile.webp", "variants/cloud-tile.webp", None, None, 72
+    yield "variants/cloud-tile.webp", "variants/cloud-tile.avif", None, None, 50
     for name in ("group", "setup", "reception", "prep", "staff", "core-card", "support-card"):
         for width in (1280, 640):
             yield f"2026/{name}.jpg", f"2026/{name}-{width}.webp", "width", width, 78
@@ -58,7 +61,7 @@ def image_jobs():
 def main() -> None:
     originals = {}
     total = 0
-    print("Original → WebP (bytes; dimensions)", flush=True)
+    print("Original → WebP / AVIF (bytes; dimensions)", flush=True)
     for source_name, destination_name, axis, limit, quality in image_jobs():
         source = IMAGES / source_name
         destination = OUTPUT / destination_name
@@ -74,7 +77,10 @@ def main() -> None:
                 if size != image.size:
                     image = image.resize(size, Image.Resampling.LANCZOS)
             destination.parent.mkdir(parents=True, exist_ok=True)
-            image.save(destination, "WEBP", quality=quality, method=6)
+            if destination.suffix == ".avif":
+                image.save(destination, "AVIF", quality=quality)
+            else:
+                image.save(destination, "WEBP", quality=quality, method=6)
             dimensions = f"{image.width}x{image.height}"
         originals[source_name] = source.stat().st_size
         output_size = destination.stat().st_size
@@ -86,7 +92,7 @@ def main() -> None:
         )
     original_total = sum(originals.values())
     print(f"Originals (unique): {len(originals)} files, {original_total:,} bytes")
-    print(f"WebP (all sizes): {total:,} bytes ({100 * (1 - total / original_total):.1f}% smaller)")
+    print(f"WebP / AVIF (all sizes): {total:,} bytes ({100 * (1 - total / original_total):.1f}% smaller)")
 
 
 if __name__ == "__main__":

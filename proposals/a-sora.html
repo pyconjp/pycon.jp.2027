@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet"></noscript>
-<link rel="preload" as="image" href="img/web/variants/sora-clear.webp" fetchpriority="high">
+<link rel="preload" as="image" href="img/web/variants/sora-clear.avif" type="image/avif" fetchpriority="high">
 <!-- Inline icons: lucide-static 0.460.0
 ISC License
 
@@ -60,10 +60,11 @@ a{color:inherit}
 
 /* ヒーロー: 全幅の写真にタイトル・日時・場所のロックアップを重ねる */
 .hero{background:var(--ai)}
-.shot{position:relative;width:100%;min-height:max(100svh,720px);overflow:hidden;background:#3C7FCB url(img/web/variants/sora-clear.webp) center bottom/cover no-repeat;--title-width:min(54vw,780px);--lockup-max-height:46vh;--lockup-scaled-height:calc(var(--title-width) * 829 / 1401)}
+.shot{position:relative;width:100%;min-height:max(100svh,720px);overflow:hidden;background:#3C7FCB url(img/web/variants/sora-clear.webp) center bottom/cover no-repeat;background-image:image-set(url(img/web/variants/sora-clear.avif) type("image/avif"), url(img/web/variants/sora-clear.webp) type("image/webp"));--title-width:min(54vw,780px);--lockup-max-height:46vh;--lockup-scaled-height:calc(var(--title-width) * 829 / 1401)}
 /* ロックアップの中心をヒーローの45%に合わせ、地図とボタンを下に並べる */
 .shot .hero-heading{position:absolute;left:50%;top:calc(45% - min(var(--lockup-scaled-height),var(--lockup-max-height)) / 2);translate:-50% 0;width:var(--title-width);z-index:4;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
 .shot .title{display:grid;place-items:center;margin:0;width:100%}
+.clouds picture,.shot .title picture{display:contents}
 .lockup{display:block;width:min(100%, calc(var(--lockup-max-height) * 1401 / 829));height:auto;filter:drop-shadow(0 0 3px rgba(255,255,255,.9)) drop-shadow(0 0 14px rgba(255,255,255,.75))}
 .hero-venue{display:inline-flex;align-items:center;gap:5px;font-size:14px;line-height:1.5;text-decoration:none;color:#fff;text-shadow:0 2px 3px #13213F,0 0 8px #13213F}
 .hero-venue:focus-visible{outline:3px solid var(--ai);outline-offset:4px}
@@ -237,18 +238,18 @@ footer a{color:var(--shu)}
     <div class="clouds" aria-hidden="true">
       <div class="parallax parallax-far">
         <div class="cloud-far">
-          <img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734" fetchpriority="high">
-          <img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734">
-          <img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734">
-          <img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734">
+          <picture><source type="image/avif" srcset="img/web/variants/cloud-tile.avif"><img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734" fetchpriority="high"></picture>
+          <picture><source type="image/avif" srcset="img/web/variants/cloud-tile.avif"><img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734"></picture>
+          <picture><source type="image/avif" srcset="img/web/variants/cloud-tile.avif"><img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734"></picture>
+          <picture><source type="image/avif" srcset="img/web/variants/cloud-tile.avif"><img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734"></picture>
         </div>
       </div>
       <div class="parallax parallax-near">
         <div class="cloud-near">
-          <img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734">
-          <img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734">
-          <img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734">
-          <img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734">
+          <picture><source type="image/avif" srcset="img/web/variants/cloud-tile.avif"><img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734"></picture>
+          <picture><source type="image/avif" srcset="img/web/variants/cloud-tile.avif"><img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734"></picture>
+          <picture><source type="image/avif" srcset="img/web/variants/cloud-tile.avif"><img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734"></picture>
+          <picture><source type="image/avif" srcset="img/web/variants/cloud-tile.avif"><img src="img/web/variants/cloud-tile.webp" alt="" width="936" height="734"></picture>
         </div>
       </div>
     </div>
@@ -261,7 +262,7 @@ footer a{color:var(--shu)}
       <div class="stamp" data-speed="-0.5"><img src="img/web/retro/stamp-6.webp" alt="" width="460" height="361"></div>
     </div>
     <div class="hero-heading">
-      <h1 class="title"><img class="lockup" src="img/web/logo/lockup-snake-1-1401.webp" alt="PyCon JP 2027 2027年9月24日（金）〜26日（日） 静岡・沼津プラサヴェルデ" data-i18n-alt="lockupAlt" width="1401" height="829" srcset="img/web/logo/lockup-snake-1-800.webp 800w, img/web/logo/lockup-snake-1-1401.webp 1401w" sizes="(max-width:860px) 92vw, min(54vw,780px)" fetchpriority="high"></h1>
+      <h1 class="title"><picture><source type="image/avif" srcset="img/web/logo/lockup-snake-1-800.avif 800w, img/web/logo/lockup-snake-1-1401.avif 1401w" sizes="(max-width:860px) 92vw, min(54vw,780px)"><img class="lockup" src="img/web/logo/lockup-snake-1-1401.webp" alt="PyCon JP 2027 2027年9月24日（金）〜26日（日） 静岡・沼津プラサヴェルデ" data-i18n-alt="lockupAlt" width="1401" height="829" srcset="img/web/logo/lockup-snake-1-800.webp 800w, img/web/logo/lockup-snake-1-1401.webp 1401w" sizes="(max-width:860px) 92vw, min(54vw,780px)" fetchpriority="high"></picture></h1>
       <a class="hero-venue" href="https://www.google.com/maps/search/?api=1&query=%E3%83%97%E3%83%A9%E3%82%B5%E3%83%B4%E3%82%A7%E3%83%AB%E3%83%87" target="_blank" rel="noopener" title="地図を開く" data-i18n-title="mapTitle"><svg class="lucide lucide-map-pin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="map-pin" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></svg><span data-i18n="map">地図を見る</span></a>
       <a class="btn hero-cta" href="#join" title="運営の経験がなくても大丈夫です" data-i18n-title="noExperience" aria-label="主催メンバーに申し込む（運営の経験がなくても大丈夫です）" data-i18n-aria-label="applyLabel"><svg class="lucide lucide-arrow-down" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-down" aria-hidden="true"><path d="M12 5v14" /> <path d="m19 12-7 7-7-7" /></svg><span data-i18n="apply">主催メンバーに申し込む</span></a>
     </div>
