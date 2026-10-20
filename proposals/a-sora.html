@@ -158,13 +158,15 @@ h3.sub-hd .n{font-family:"Outfit";font-weight:900;font-size:14px;color:#fff;back
 
 .teams{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
 .teams.sub{grid-template-columns:repeat(3,1fr);margin-top:16px}
-.team{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 8px 16px;background:#fff;border:var(--bd);border-radius:8px;text-align:center;font-weight:700;cursor:help;outline:none;transition:translate .15s,box-shadow .15s}
-.team:hover,.team:focus-visible{translate:-3px -3px;box-shadow:var(--sh)}
+.team{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 8px 16px;background:#fff;border:var(--bd);border-radius:8px;text-align:center;font-weight:700;transition:translate .15s,box-shadow .15s}
+.team:hover{translate:-3px -3px;box-shadow:var(--sh)}
 .team img{display:block;width:100%;height:110px;object-fit:contain}
 html[lang="en"] .team{min-width:0}
 html[lang="en"] .team > [data-i18n]{max-width:100%;overflow-wrap:anywhere}
+.team-description{max-width:36ch;margin:0;color:var(--ink-2);font-size:14px;font-weight:400;line-height:1.7;overflow-wrap:anywhere}
 .teams.sub .team{display:grid;grid-template-columns:52px minmax(0,1fr);column-gap:12px;row-gap:0;padding:12px 16px;border-style:dashed;background:var(--card);text-align:left;font-size:15px;line-height:1.35}
-.teams.sub .team img{height:52px}
+.teams.sub .team img{height:52px;grid-row:1/3}
+.teams.sub .team-description{grid-column:2}
 @media (max-width:860px){
   .teams.sub{grid-template-columns:1fr}
 }
@@ -214,7 +216,7 @@ footer a{color:var(--shu)}
 .panel{border:var(--bd);box-shadow:var(--sh);border-radius:24px}
 .type,.step,.team,.chip,.memories figure{border-radius:16px}
 .memories figcaption,h3.sub-hd .n{border:0}
-.team:hover,.team:focus-visible{translate:0 -3px;box-shadow:var(--sh)}
+.team:hover{translate:0 -3px;box-shadow:var(--sh)}
 .teams.sub .team{border:1.5px dashed #B9C9E2}
 .step:not(:last-child)::after{border-color:var(--ai)}
 .memories figcaption{background:#fff}
@@ -294,16 +296,16 @@ footer a{color:var(--shu)}
 
     <h3 class="sub-hd" id="teams"><span class="n">02</span><span data-i18n="teams">チーム</span></h3>
     <div class="teams">
-      <div class="team" tabindex="0" data-tip="トークの公募やキーノートなど、イベントの中身づくり" data-i18n-tip="programTip" aria-label="企画：トークの公募やキーノートなど、イベントの中身づくり" data-i18n-aria-label="programLabel"><img src="img/web/teams/program.webp" alt="" loading="lazy" width="403" height="480"><span data-i18n="program">企画</span></div>
-      <div class="team" tabindex="0" data-tip="レイアウトや搬入、当日の会場運営" data-i18n-tip="venueTip" aria-label="会場：レイアウトや搬入、当日の会場運営" data-i18n-aria-label="venueLabel"><img src="img/web/teams/venue.webp" alt="" loading="lazy" width="480" height="443"><span data-i18n="venue">会場</span></div>
-      <div class="team" tabindex="0" data-tip="チケットや受付、アクセシビリティの支援" data-i18n-tip="attendeesTip" aria-label="参加者：チケットや受付、アクセシビリティの支援" data-i18n-aria-label="attendeesLabel"><img src="img/web/teams/attendee.webp" alt="" loading="lazy" width="480" height="455"><span data-i18n="attendees">参加者</span></div>
-      <div class="team" tabindex="0" data-tip="スポンサーの募集やブースの調整" data-i18n-tip="sponsorshipTip" aria-label="協賛：スポンサーの募集やブースの調整" data-i18n-aria-label="sponsorshipLabel"><img src="img/web/teams/sponsor.webp" alt="" loading="lazy" width="454" height="480"><span data-i18n="sponsorship">協賛</span></div>
-      <div class="team" tabindex="0" data-tip="ブログの公開、SNSなどでの発信" data-i18n-tip="prTip" aria-label="広報：ブログの公開、SNSなどでの発信" data-i18n-aria-label="prLabel"><img src="img/web/teams/pr.webp" alt="" loading="lazy" width="400" height="480"><span data-i18n="pr">広報</span></div>
+      <div class="team"><img src="img/web/teams/program.webp" alt="" loading="lazy" width="403" height="480"><span data-i18n="program">企画</span><p class="team-description" data-i18n="programTip">トークの公募やキーノートなど、イベントの中身づくり</p></div>
+      <div class="team"><img src="img/web/teams/venue.webp" alt="" loading="lazy" width="480" height="443"><span data-i18n="venue">会場</span><p class="team-description" data-i18n="venueTip">レイアウトや搬入、当日の会場運営</p></div>
+      <div class="team"><img src="img/web/teams/attendee.webp" alt="" loading="lazy" width="480" height="455"><span data-i18n="attendees">参加者</span><p class="team-description" data-i18n="attendeesTip">チケットや受付、アクセシビリティの支援</p></div>
+      <div class="team"><img src="img/web/teams/sponsor.webp" alt="" loading="lazy" width="454" height="480"><span data-i18n="sponsorship">協賛</span><p class="team-description" data-i18n="sponsorshipTip">スポンサーの募集やブースの調整</p></div>
+      <div class="team"><img src="img/web/teams/pr.webp" alt="" loading="lazy" width="400" height="480"><span data-i18n="pr">広報</span><p class="team-description" data-i18n="prTip">ブログの公開、SNSなどでの発信</p></div>
     </div>
     <div class="teams sub">
-      <div class="team" tabindex="0" data-tip="Webサイトやアプリの実装" data-i18n-tip="developmentTip" aria-label="開発：Webサイトやアプリの実装" data-i18n-aria-label="developmentLabel"><img src="img/web/teams/dev.webp" alt="" loading="lazy" width="476" height="480"><span data-i18n="development">開発</span></div>
-      <div class="team" tabindex="0" data-tip="ロゴや掲示物のデザイン" data-i18n-tip="designTip" aria-label="デザイン：ロゴや掲示物のデザイン" data-i18n-aria-label="designLabel"><img src="img/web/teams/design.webp" alt="" loading="lazy" width="463" height="480"><span data-i18n="design">デザイン</span></div>
-      <div class="team" tabindex="0" data-tip="静岡の業者や地域団体との連携" data-i18n-tip="localTip" aria-label="地域連携：静岡の業者や地域団体との連携" data-i18n-aria-label="localLabel"><img src="img/web/teams/local.webp" alt="" loading="lazy" width="480" height="444"><span data-i18n="local">地域連携</span></div>
+      <div class="team"><img src="img/web/teams/dev.webp" alt="" loading="lazy" width="476" height="480"><span data-i18n="development">開発</span><p class="team-description" data-i18n="developmentTip">Webサイトやアプリの実装</p></div>
+      <div class="team"><img src="img/web/teams/design.webp" alt="" loading="lazy" width="463" height="480"><span data-i18n="design">デザイン</span><p class="team-description" data-i18n="designTip">ロゴや掲示物のデザイン</p></div>
+      <div class="team"><img src="img/web/teams/local.webp" alt="" loading="lazy" width="480" height="444"><span data-i18n="local">地域連携</span><p class="team-description" data-i18n="localTip">静岡の業者や地域団体との連携</p></div>
     </div>
     <div class="legend"><span><svg class="lucide lucide-circle-check" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="circle-check" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m9 12 2 2 4-4" /></svg><span data-i18n="primaryTeam">メインを1つ選択</span></span><span><svg class="lucide lucide-clock" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="clock" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <polyline points="12 6 12 12 16 14" /></svg><span data-i18n="teamAssignment">チームは申し込み後に決定</span></span></div>
 
