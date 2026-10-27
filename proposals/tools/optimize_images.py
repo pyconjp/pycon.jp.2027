@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate WebP, AVIF and JPEG assets without changing originals.
+"""Generate WebP and AVIF assets without changing originals.
 
 Run with: python3 proposals/tools/optimize_images.py
 Requires Pillow with WebP and AVIF support. Every run starts from the original images.
@@ -74,8 +74,6 @@ def image_jobs():
             yield f"{blog}/{name}.jpg", f"{blog}/{name}-{width}.webp", "width", width, 78
     for width in (1280, 640):
         yield f"{blog}/rooftop.jpg", f"{blog}/rooftop-{width}.avif", "width", width, 50
-    # og:image: JPEG for crawlers that do not read WebP.
-    yield f"{blog}/rooftop.jpg", f"{blog}/rooftop-1200.jpg", "width", 1200, 80
     # Animated: every frame is kept at its original size and delay.
     # Quality 25 keeps the 75 frames under 2 MB (30 gave 2.04 MB).
     yield f"{blog}/huddle.gif", f"{blog}/huddle.webp", None, None, 25
@@ -86,7 +84,7 @@ def image_jobs():
 def main() -> None:
     originals = {}
     total = 0
-    print("Original → WebP / AVIF / JPEG (bytes; dimensions)", flush=True)
+    print("Original → WebP / AVIF (bytes; dimensions)", flush=True)
     for source_name, destination_name, axis, limit, quality in image_jobs():
         source = IMAGES / source_name
         destination = OUTPUT / destination_name
@@ -111,8 +109,6 @@ def main() -> None:
             destination.parent.mkdir(parents=True, exist_ok=True)
             if destination.suffix == ".avif":
                 image.save(destination, "AVIF", quality=quality)
-            elif destination.suffix == ".jpg":
-                image.save(destination, "JPEG", quality=quality, optimize=True, progressive=True)
             elif destination.suffix != ".webp":
                 raise ValueError(f"Unsupported output format: {destination_name}")
             elif animated:
@@ -144,7 +140,7 @@ def main() -> None:
         )
     original_total = sum(originals.values())
     print(f"Originals (unique): {len(originals)} files, {original_total:,} bytes")
-    print(f"WebP / AVIF / JPEG (all sizes): {total:,} bytes ({100 * (1 - total / original_total):.1f}% smaller)")
+    print(f"WebP / AVIF (all sizes): {total:,} bytes ({100 * (1 - total / original_total):.1f}% smaller)")
 
 
 if __name__ == "__main__":
