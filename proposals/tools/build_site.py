@@ -40,6 +40,25 @@ ARRAY_FROM = re.compile(
     re.DOTALL,
 )
 INTERPOLATION = re.compile(r"\$\{([^}]*)\}")
+# Pages treats a site without a top-level 404.html as an SPA and answers
+# unknown paths with index.html and 200, so publish a real 404 page.
+NOT_FOUND_HTML = """<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ページが見つかりません | PyCon JP 2027</title>
+<style>
+body { margin: 0; padding: 4rem 1rem; background: #ffffff; color: #1a1a1a; font-family: system-ui, sans-serif; text-align: center; }
+a { color: #1a4fa0; }
+</style>
+</head>
+<body>
+<h1>ページが見つかりません</h1>
+<p><a href="/">トップへ戻る</a></p>
+</body>
+</html>
+"""
 
 
 def image_references(html: str) -> set[str]:
@@ -197,6 +216,7 @@ def main() -> None:
         "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800\n",
         encoding="utf-8",
     )
+    (SITE / "404.html").write_text(NOT_FOUND_HTML, encoding="utf-8")
     for reference in sorted(references):
         destination = SITE / reference
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -206,7 +226,7 @@ def main() -> None:
     output_references = image_references((SITE / "index.html").read_text(encoding="utf-8"))
     validate_images(SITE, output_references)
     files = [path for path in SITE.rglob("*") if path.is_file()]
-    expected = {"index.html", "_headers"} | output_references
+    expected = {"index.html", "404.html", "_headers"} | output_references
     if {path.relative_to(SITE).as_posix() for path in files} != expected:
         raise ValueError("Output files do not match the page's references")
     draft_files = build_drafts()

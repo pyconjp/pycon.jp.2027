@@ -12,8 +12,14 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # wrangler.jsonc の name と同じ値にする
+  PAGES_PROJECT_NAME: pycon-jp-2027-staff
+
 jobs:
   deploy:
+    # workflow_dispatch を main 以外で実行しても本番に出さない
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -22,9 +28,57 @@ jobs:
         with:
           python-version: "3.13"
       - run: python3 proposals/tools/build_site.py
-      - uses: cloudflare/wrangler-action@v4
+      - name: Check Pages project
+        id: project
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          response="${RUNNER_TEMP}/pages-project.json"
+          status=$(curl --silent --show-error \
+            --output "$response" \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PAGES_PROJECT_NAME}")
+          case "$status" in
+            200)
+              if ! jq -e '.result.production_branch == "main"' "$response" > /dev/null; then
+                echo "::error::Pages project ${PAGES_PROJECT_NAME} has production branch $(jq -r '.result.production_branch' "$response"), expected main"
+                exit 1
+              fi
+              echo "Pages project ${PAGES_PROJECT_NAME} exists"
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+              ;;
+            404)
+              # wrangler の pagesProjectExists と同じく、エラーコード 8000007（Project not found）で判定する
+              if ! jq -e '.errors[]? | select(.code == 8000007)' "$response" > /dev/null; then
+                echo "::error::Cloudflare API returned 404 without the Project not found error (8000007) for ${PAGES_PROJECT_NAME}"
+                cat "$response"
+                exit 1
+              fi
+              echo "Pages project ${PAGES_PROJECT_NAME} not found; it will be created"
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unexpected status ${status} from Cloudflare API while checking Pages project ${PAGES_PROJECT_NAME}"
+              cat "$response"
+              exit 1
+              ;;
+          esac
+      - name: Create Pages project
+        if: steps.project.outputs.exists == 'false'
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4"
-          command: deploy
+          command: pages project create ${{ env.PAGES_PROJECT_NAME }} --production-branch=main
+      - name: Deploy to Pages
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          # 出力先は wrangler.jsonc の pages_build_output_dir（./site）から読まれる
+          # wrangler-action が package.json を作り作業ツリーが dirty になるため --commit-dirty=true を付ける
+          command: pages deploy --project-name=${{ env.PAGES_PROJECT_NAME }} --branch=main --commit-dirty=true
