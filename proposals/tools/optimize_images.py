@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate WebP and AVIF assets without changing originals.
+"""Generate WebP, AVIF and JPEG assets without changing originals.
 
 Run with: python3 proposals/tools/optimize_images.py
 Requires Pillow with WebP and AVIF support. Every run starts from the original images.
@@ -12,6 +12,13 @@ from PIL import Image
 
 IMAGES = Path(__file__).resolve().parents[1] / "img"
 OUTPUT = IMAGES / "web"
+# Destinations made from one frame of an animated source.
+STILL_FRAMES = {
+    # Frames 0-58 show a "View profile" tooltip. Frame 65 has no tooltip or
+    # name labels, and its mouse cursor is not over anyone's face.
+    "blog/2026-10-venue-visit/huddle-still.webp": 65,
+}
+MAX_ANIMATED_BYTES = 2_000_000
 
 
 def image_jobs():
@@ -57,15 +64,40 @@ def image_jobs():
     # Keep the transparent lockup separate from the full brush.jpg logo option.
     yield "logo/brush.png", "logo/brush-transparent.webp", None, None, 88
 
+    # Blog: 2026-10 venue visit. Portrait photos keep the width limit too.
+    blog = "blog/2026-10-venue-visit"
+    for name in (
+        "rooftop", "sushi", "repubrew", "repubrew-beer", "exterior", "foyer-1f", "hall-a",
+        "hall-b", "foyer-3f", "room-301", "room-401",
+    ):
+        for width in (1280, 640):
+            yield f"{blog}/{name}.jpg", f"{blog}/{name}-{width}.webp", "width", width, 78
+    for width in (1280, 640):
+        yield f"{blog}/rooftop.jpg", f"{blog}/rooftop-{width}.avif", "width", width, 50
+    # og:image: JPEG for crawlers that do not read WebP.
+    yield f"{blog}/rooftop.jpg", f"{blog}/rooftop-1200.jpg", "width", 1200, 80
+    # Animated: every frame is kept at its original size and delay.
+    # Quality 25 keeps the 75 frames under 2 MB (30 gave 2.04 MB).
+    yield f"{blog}/huddle.gif", f"{blog}/huddle.webp", None, None, 25
+    # Shown instead of the animation under prefers-reduced-motion: reduce.
+    yield f"{blog}/huddle.gif", f"{blog}/huddle-still.webp", None, None, 78
+
 
 def main() -> None:
     originals = {}
     total = 0
-    print("Original → WebP / AVIF (bytes; dimensions)", flush=True)
+    print("Original → WebP / AVIF / JPEG (bytes; dimensions)", flush=True)
     for source_name, destination_name, axis, limit, quality in image_jobs():
         source = IMAGES / source_name
         destination = OUTPUT / destination_name
         with Image.open(source) as image:
+            still_frame = STILL_FRAMES.get(destination_name)
+            if still_frame is not None:
+                image.seek(still_frame)
+                image = image.convert("RGB")
+            animated = getattr(image, "is_animated", False)
+            if animated and (axis is not None or destination.suffix != ".webp"):
+                raise ValueError(f"Animated images are only converted to WebP at their own size: {source_name}")
             if axis is not None:
                 extent = {
                     "width": image.width,
@@ -79,6 +111,26 @@ def main() -> None:
             destination.parent.mkdir(parents=True, exist_ok=True)
             if destination.suffix == ".avif":
                 image.save(destination, "AVIF", quality=quality)
+            elif destination.suffix == ".jpg":
+                image.save(destination, "JPEG", quality=quality, optimize=True, progressive=True)
+            elif destination.suffix != ".webp":
+                raise ValueError(f"Unsupported output format: {destination_name}")
+            elif animated:
+                durations = []
+                for frame in range(image.n_frames):
+                    image.seek(frame)
+                    durations.append(image.info["duration"])
+                image.seek(0)
+                image.save(
+                    destination, "WEBP", quality=quality, method=6,
+                    save_all=True, duration=durations, loop=0,
+                )
+                animated_size = destination.stat().st_size
+                if animated_size > MAX_ANIMATED_BYTES:
+                    raise ValueError(
+                        f"Animated WebP is {animated_size:,} bytes, over {MAX_ANIMATED_BYTES:,}; "
+                        f"lower its quality: {destination_name}"
+                    )
             else:
                 image.save(destination, "WEBP", quality=quality, method=6)
             dimensions = f"{image.width}x{image.height}"
@@ -92,7 +144,7 @@ def main() -> None:
         )
     original_total = sum(originals.values())
     print(f"Originals (unique): {len(originals)} files, {original_total:,} bytes")
-    print(f"WebP / AVIF (all sizes): {total:,} bytes ({100 * (1 - total / original_total):.1f}% smaller)")
+    print(f"WebP / AVIF / JPEG (all sizes): {total:,} bytes ({100 * (1 - total / original_total):.1f}% smaller)")
 
 
 if __name__ == "__main__":
