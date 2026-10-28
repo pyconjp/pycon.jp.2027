@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the public top page, blog posts and selected drafts, using the standard library."""
+"""Build the public top page and blog posts into site/, using the standard library."""
 
 import re
 import shutil
@@ -12,30 +12,14 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[2]
 PROPOSALS = ROOT / "proposals"
 SITE = ROOT / "site"
-DRAFT_PAGES = {
-    "drafts-index.html": "index.html",
-    "index.html": "initial.html",
-    "a-kinetic.html": "a-kinetic.html",
-    "b-warm.html": "b-warm.html",
-    "c-suruga.html": "c-suruga.html",
-    "a-variants.html": "a-variants.html",
-    "a-chart.html": "a-chart.html",
-    "a-hanga.html": "a-hanga.html",
-    "a-tairyo.html": "a-tairyo.html",
-    "logo-options.html": "logo-options.html",
-}
 BLOG_PAGES = {
     "blog-2026-10-venue-visit.html": "2026-10-venue-visit.html",
 }
-FORBIDDEN_PATHS = ("lp10", "cp10", "ev10", "/ref/", "type-preview")
-FORBIDDEN_PAGES = (
-    "lp-compare.html", "lp-patterns.html", "campaign-lps.html", "events.html",
-)
 
 # Covers HTML src/srcset, CSS url(), and quoted JS paths. Keep ${...}
 # together so whitespace in an interpolation does not truncate the reference.
 IMAGE_REFERENCE = re.compile(
-    r"(?<![\w/.-])(?:img|thumbs)/(?:\$\{[^}]*\}|[^\s\"'`()<>,$])+"
+    r"(?<![\w/.-])img/(?:\$\{[^}]*\}|[^\s\"'`()<>,$])+"
 )
 ARRAY_FROM = re.compile(
     r"Array\.from\(\s*\{\s*length:\s*(\d+)\s*\}\s*,\s*"
@@ -43,8 +27,8 @@ ARRAY_FROM = re.compile(
     re.DOTALL,
 )
 INTERPOLATION = re.compile(r"\$\{([^}]*)\}")
-# Every src/srcset value and CSS url() must be one of the forms IMAGE_REFERENCE
-# reads (img/..., thumbs/...), so /img/ or ../img/ cannot slip past the copy.
+# Every src/srcset value and CSS url() must be the form IMAGE_REFERENCE reads
+# (img/...), so /img/ or ../img/ cannot slip past the copy.
 IMAGE_ATTRIBUTE = re.compile(r"""\b(src|srcset)\s*=\s*(["'])(.*?)\2""", re.DOTALL)
 CSS_URL = re.compile(r"""url\(\s*(["']?)(.*?)\1\s*\)""", re.DOTALL)
 # og:image / twitter:image on this host are copied like any other image.
@@ -117,8 +101,8 @@ def image_references(html: str) -> set[str]:
         if "${" in reference:
             raise ValueError(f"Unsupported image template: {reference}")
         path = unquote(urlsplit(unescape(reference)).path)
-        if ".." in Path(path).parts or not path.startswith(("img/", "thumbs/")):
-            raise ValueError(f"Image path escapes img/ or thumbs/: {reference}")
+        if ".." in Path(path).parts or not path.startswith("img/"):
+            raise ValueError(f"Image path escapes img/: {reference}")
         paths.add(path)
     return paths
 
@@ -138,8 +122,8 @@ def validate_image_reference_forms(html: str, page: str) -> None:
         # Absolute URLs, data: URIs and same-document SVG references (url(#id)).
         if url.scheme or url.netloc or value.startswith("#"):
             continue
-        if not value.startswith(("img/", "thumbs/")):
-            raise ValueError(f"Image reference in {page} is not under img/ or thumbs/: {value}")
+        if not value.startswith("img/"):
+            raise ValueError(f"Image reference in {page} is not under img/: {value}")
 
 
 class MetaImages(HTMLParser):
@@ -183,9 +167,8 @@ def page_references(html: str, directory: Path, page: str) -> set[str]:
 def validate_images(directory: Path, references: set[str]) -> None:
     for reference in sorted(references):
         image = directory / reference
-        allowed = [directory / name for name in ("img", "thumbs")]
-        if not any(image.resolve().is_relative_to(root.resolve()) for root in allowed):
-            raise ValueError(f"Image path escapes img/ or thumbs/: {image}")
+        if not image.resolve().is_relative_to((directory / "img").resolve()):
+            raise ValueError(f"Image path escapes img/: {image}")
         if not image.is_file():
             raise FileNotFoundError(f"Referenced image does not exist: {image}")
 
@@ -215,24 +198,9 @@ def page_ids(html: str) -> set[str]:
     return parser.ids
 
 
-def validate_public_paths(paths: set[str]) -> None:
-    for path in sorted(paths):
-        if any(token in f"/{path.lower()}" for token in FORBIDDEN_PATHS):
-            raise ValueError(f"Forbidden public file: {path}")
+def validate_local_links(directory: Path, html: str, page: str) -> None:
+    """Require every local link of a page in directory to reach a file within site/.
 
-
-def validate_no_comparison_pages(html: str, page: str) -> None:
-    # Check the entire HTML so JS-generated links cannot bypass the check.
-    decoded = unquote(unescape(html)).lower()
-    for forbidden in FORBIDDEN_PAGES:
-        if forbidden in decoded:
-            raise ValueError(f"Forbidden comparison page in {page}: {forbidden}")
-
-
-def validate_local_links(directory: Path, html: str, page: str, boundary: Path) -> None:
-    """Require every local link of a page in directory to reach a file within boundary.
-
-    The site root "/" is always allowed, so drafts can link back to the top page.
     A fragment (#join) must be an id in the target HTML, or in this page for "#id".
     """
     parser = PageLinks()
@@ -247,14 +215,11 @@ def validate_local_links(directory: Path, html: str, page: str, boundary: Path) 
                 raise ValueError(f"Missing link fragment in {page}: {href}")
             continue
         path = unquote(url.path)
-        if path == "/":
-            target = SITE / "index.html"
-        else:
-            target = SITE / path.lstrip("/") if path.startswith("/") else directory / path
-            if not target.resolve().is_relative_to(boundary.resolve()):
-                raise ValueError(f"Link escapes {boundary.relative_to(ROOT)} in {page}: {href}")
-            if target.is_dir():
-                target /= "index.html"
+        target = SITE / path.lstrip("/") if path.startswith("/") else directory / path
+        if not target.resolve().is_relative_to(SITE.resolve()):
+            raise ValueError(f"Link escapes {SITE.relative_to(ROOT)} in {page}: {href}")
+        if target.is_dir():
+            target /= "index.html"
         if not target.is_file():
             raise FileNotFoundError(f"Missing link target in {page}: {href}")
         if fragment:
@@ -264,18 +229,15 @@ def validate_local_links(directory: Path, html: str, page: str, boundary: Path) 
                 raise ValueError(f"Missing link fragment in {page}: {href}")
 
 
-def build_pages(directory: Path, pages: dict[str, str], link_boundary: Path) -> list[Path]:
+def build_pages(directory: Path, pages: dict[str, str]) -> list[Path]:
     """Publish pages in directory with their own copy of every image they reference.
 
-    Local links must stay within link_boundary. Pages that link to the top
-    page must be built after it.
+    Pages that link to the top page must be built after it.
     """
     references = set()
     for source in pages:
         html = (PROPOSALS / source).read_text(encoding="utf-8")
-        validate_no_comparison_pages(html, source)
         references.update(page_references(html, directory, source))
-    validate_public_paths(set(pages.values()) | references)
     validate_images(PROPOSALS, references)
 
     directory.mkdir()
@@ -290,13 +252,11 @@ def build_pages(directory: Path, pages: dict[str, str], link_boundary: Path) -> 
     output_references = set()
     for page in pages.values():
         html = (directory / page).read_text(encoding="utf-8")
-        validate_no_comparison_pages(html, page)
-        validate_local_links(directory, html, page, boundary=link_boundary)
+        validate_local_links(directory, html, page)
         output_references.update(page_references(html, directory, page))
     validate_images(directory, output_references)
     files = [path for path in directory.rglob("*") if path.is_file()]
     actual = {path.relative_to(directory).as_posix() for path in files}
-    validate_public_paths(actual)
     if actual != set(pages.values()) | output_references:
         raise ValueError(
             f"Output files in {directory.relative_to(ROOT)} do not match the pages' references"
@@ -318,8 +278,6 @@ def main() -> None:
     (SITE / "_headers").write_text(
         "/img/*\n"
         "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800\n"
-        "/drafts/img/*\n"
-        "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800\n"
         "/blog/img/*\n"
         "  Cache-Control: public, max-age=86400, stale-while-revalidate=604800\n",
         encoding="utf-8",
@@ -339,17 +297,11 @@ def main() -> None:
     expected = {"index.html", "404.html", "_headers"} | output_references
     if {path.relative_to(SITE).as_posix() for path in files} != expected:
         raise ValueError("Output files do not match the page's references")
-    draft_files = build_pages(SITE / "drafts", DRAFT_PAGES, link_boundary=SITE / "drafts")
-    # Posts link back to the top page (../, ../#join), so they may link anywhere in site/.
-    blog_files = build_pages(SITE / "blog", BLOG_PAGES, link_boundary=SITE)
+    # Posts link back to the top page (../, ../#join).
+    blog_files = build_pages(SITE / "blog", BLOG_PAGES)
     # The top page links to blog posts, so check its links once they exist.
-    validate_local_links(SITE, (SITE / "index.html").read_text(encoding="utf-8"), "index.html", boundary=SITE)
-    validate_public_paths(
-        {path.relative_to(SITE).as_posix() for path in files + draft_files + blog_files}
-    )
-    for label, group in (
-        ("Top (excluding drafts and blog)", files), ("Drafts", draft_files), ("Blog", blog_files),
-    ):
+    validate_local_links(SITE, (SITE / "index.html").read_text(encoding="utf-8"), "index.html")
+    for label, group in (("Top (excluding blog)", files), ("Blog", blog_files)):
         size = sum(path.stat().st_size for path in group)
         print(f"{label}: {len(group)} files, {size:,} bytes")
 

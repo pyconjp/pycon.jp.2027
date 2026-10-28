@@ -47,23 +47,6 @@ def image_jobs():
         path = f"shizuoka/{name}.webp"
         yield path, path, "longest", 280, 80
 
-    # Drafts reuse the existing 2026 photos above; only crowd needs new sizes.
-    for width in (1280, 640):
-        yield "2026/crowd.jpg", f"2026/crowd-{width}.webp", "width", width, 78
-    for name in (
-        "variants/tairyo-bg", "b-hero", "variants/hanga-bg", "c-hero", "b-team",
-        "logo/retro", "logo/wave", "logo/brush",
-    ):
-        yield f"{name}.jpg", f"{name}.webp", "width", 1376, 78
-    for name in ("tairyo", "hanga", "chart"):
-        for device in ("pc", "sp"):
-            path = f"variants/shots/a-{name}-{device}"
-            yield f"{path}.jpg", f"{path}.webp", None, None, 80
-    for name in ("a-kinetic", "b-warm", "c-suruga"):
-        yield f"../thumbs/{name}.jpg", f"thumbs/{name}.webp", None, None, 80
-    # Keep the transparent lockup separate from the full brush.jpg logo option.
-    yield "logo/brush.png", "logo/brush-transparent.webp", None, None, 88
-
     # Blog: 2026-10 venue visit. Portrait photos keep the width limit too.
     blog = "blog/2026-10-venue-visit"
     for name in (
@@ -74,6 +57,8 @@ def image_jobs():
             yield f"{blog}/{name}.jpg", f"{blog}/{name}-{width}.webp", "width", width, 78
     for width in (1280, 640):
         yield f"{blog}/rooftop.jpg", f"{blog}/rooftop-{width}.avif", "width", width, 50
+    # huddle.gif already has participants' names mosaicked. The original recording (never
+    # committed) and the mosaic step live in ikedaosushi/pycon-jp-2027-design (proposals/tools/mosaic_huddle.py).
     # Animated: every frame is kept at its original size and delay.
     # Quality 25 keeps the 75 frames under 2 MB (30 gave 2.04 MB).
     yield f"{blog}/huddle.gif", f"{blog}/huddle.webp", None, None, 25

@@ -2,3 +2,6 @@
 .idea/
 .vscode/
 site/
+.wrangler/
+__pycache__/
+.claude/
