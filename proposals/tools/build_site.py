@@ -66,8 +66,10 @@ a { color: #1a4fa0; }
 </style>
 </head>
 <body>
+<main>
 <h1>ページが見つかりません</h1>
 <p><a href="/">トップへ戻る</a></p>
+</main>
 </body>
 </html>
 """
