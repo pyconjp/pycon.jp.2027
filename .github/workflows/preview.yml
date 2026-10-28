@@ -1,0 +1,133 @@
+name: Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+concurrency:
+  # 本番の deploy-production とは別にし、同じ PR の古い実行は止める
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  # wrangler.jsonc の name と同じ値にする。プロジェクトの作成は deploy.yml が持つ
+  PAGES_PROJECT_NAME: pycon-jp-2027-staff
+  # PR コメントを探して更新するための隠しマーカー
+  COMMENT_MARKER: "<!-- pages-preview -->"
+
+jobs:
+  preview:
+    # フォークからの PR には secrets が渡らないので実行しない
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # マージコミットではなく PR のブランチの HEAD を出す（コメントの SHA と Pages の記録をそろえる）
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Check branch name
+        id: branch
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # wrangler-action は command を空白と引用符で引数に分け、さらに npx がシェル経由で実行するため、使える文字を絞ってから渡す
+          if [[ ! "$HEAD_REF" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+            echo "::error::Branch name must match ^[A-Za-z0-9._/-]+$ to deploy a preview: ${HEAD_REF}"
+            exit 1
+          fi
+
+          # production branch と同じ名前で出すと本番になるので止める。プロジェクトの作成は deploy.yml が持つので、200 以外は止める
+          response="${RUNNER_TEMP}/pages-project.json"
+          status=$(curl --silent --show-error \
+            --output "$response" \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PAGES_PROJECT_NAME}")
+          if [[ "$status" != "200" ]]; then
+            echo "::error::Unexpected status ${status} from Cloudflare API while checking Pages project ${PAGES_PROJECT_NAME}"
+            cat "$response"
+            exit 1
+          fi
+          production_branch=$(jq -r '.result.production_branch' "$response")
+          if [[ -z "$production_branch" || "$production_branch" == "null" ]]; then
+            echo "::error::Pages project ${PAGES_PROJECT_NAME} has no production branch in the API response"
+            exit 1
+          fi
+          if [[ "$HEAD_REF" == "$production_branch" ]]; then
+            echo "::error::Refusing to deploy a preview from branch ${HEAD_REF}; it is the production branch of ${PAGES_PROJECT_NAME}"
+            exit 1
+          fi
+          echo "name=${HEAD_REF}" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python3 proposals/tools/build_site.py
+      - name: Deploy to Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          # 出力先は wrangler.jsonc の pages_build_output_dir（./site）から読まれる
+          # wrangler-action が package.json を作り作業ツリーが dirty になるため --commit-dirty=true を付ける
+          command: pages deploy --project-name=${{ env.PAGES_PROJECT_NAME }} --branch=${{ steps.branch.outputs.name }} --commit-dirty=true
+      - name: Comment preview URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          PAGES_ENVIRONMENT: ${{ steps.deploy.outputs.pages-environment }}
+        run: |
+          if [[ "$PAGES_ENVIRONMENT" != "preview" ]]; then
+            echo "::error::Expected a preview deployment, got environment '${PAGES_ENVIRONMENT}'"
+            exit 1
+          fi
+          if [[ -z "$ALIAS_URL" ]]; then
+            echo "::error::wrangler-action returned no pages-deployment-alias-url"
+            exit 1
+          fi
+          if [[ -z "$DEPLOYMENT_URL" ]]; then
+            echo "::error::wrangler-action returned no deployment-url"
+            exit 1
+          fi
+
+          body="${RUNNER_TEMP}/preview-comment.md"
+          cat > "$body" <<EOF
+          ${COMMENT_MARKER}
+          ### プレビュー
+
+          | | URL |
+          | --- | --- |
+          | ブランチの最新 | ${ALIAS_URL} |
+          | このデプロイ | ${DEPLOYMENT_URL} |
+
+          正確にこのコミットを見るときは「このデプロイ」の URL を使う。
+
+          コミット: ${HEAD_SHA}
+          EOF
+
+          # github-actions[bot] が書いた、マーカー付きのコメントを探す
+          # 見つかったうちの 1 件目だけを取る
+          comment_ids=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(env.COMMENT_MARKER))) | .id")
+          comment_id="${comment_ids%%$'\n'*}"
+
+          if [[ -n "$comment_id" ]]; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" -F "body=@${body}" > /dev/null
+            echo "Updated comment ${comment_id}"
+          else
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" -F "body=@${body}" > /dev/null
+            echo "Created a comment"
+          fi
