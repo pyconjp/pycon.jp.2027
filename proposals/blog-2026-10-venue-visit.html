@@ -42,11 +42,13 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* トップ(夏空案)と同じ配色: 白地に藍、アクセントは朱。枠は細い罫線と淡い影 */
 :root{
   --bg:#F4F7FB; --ink:#13213F; --ink-2:#4A5672; --card:#FFFFFF;
-  --ai:#163A8A; --shu:#E0402A; --ki:#D6E6FB; --matsu:#2E8B57;
-  --cta:#E0402A;
+  --ai:#163A8A; --shu:#C8341E; --ki:#D6E6FB; --matsu:#2E8B57;
+  --cta:#C8341E;
   --bd:1.5px solid #D6DFEC; --sh:0 8px 24px rgba(19,33,63,.07);
 }
 *{box-sizing:border-box}
+/* sticky ヘッダーの下に、移動先やフォーカスが隠れないようにする */
+html{scroll-padding-top:80px}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
 .num{font-family:"Outfit",sans-serif}
@@ -58,6 +60,7 @@ a{color:inherit}
 .site-logo img{display:block;width:auto;height:34px}
 .site-hd a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media (max-width:860px){
+  html{scroll-padding-top:60px}
   .site-hd{height:44px;padding:0 12px}
   .site-logo img{height:28px}
 }
@@ -87,6 +90,12 @@ figure{margin:0}
 .photo{margin:8px 0 32px}
 .photo img,.photos img{display:block;width:100%;height:auto;border-radius:16px;border:var(--bd);background:#E3EAF4}
 figcaption{margin-top:8px;font-size:13px;line-height:1.6;color:var(--ink-2)}
+/* 動く写真を止めるボタン: キャプションの下に左寄せで置く小さなピル(写真の上には重ねず、figure の名前にも混ぜない) */
+.anim-toggle{display:inline-flex;align-items:center;gap:4px;min-height:26px;margin-top:8px;padding:2px 10px;border:var(--bd);border-radius:999px;background:#fff;color:var(--ink);font-family:inherit;font-size:13px;font-weight:700;line-height:1.5;cursor:pointer;transition:background .15s}
+.anim-toggle:hover{background:var(--bg)}
+.anim-toggle:focus-visible{outline:3px solid var(--ai);outline-offset:2px}
+.anim-toggle [data-lucide]{width:14px;height:14px;color:var(--ai)}
+.anim-toggle[data-state="paused"] .lucide-pause,.anim-toggle[data-state="playing"] .lucide-play{display:none}
 .photo.wide{width:min(800px,calc(100vw - 32px))}
 .photos{display:grid;gap:12px;margin:8px auto 32px}
 .photos img{aspect-ratio:4/3;object-fit:cover}
@@ -111,8 +120,8 @@ figcaption{margin-top:8px;font-size:13px;line-height:1.6;color:var(--ink-2)}
 
 /* 申し込み: トップと同じ朱色の丸いボタン */
 .cta-wrap{text-align:center;margin-top:36px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:60px;max-width:100%;padding:0 40px;border-radius:999px;background:var(--cta);color:#fff;text-decoration:none;font-weight:900;font-size:18px;box-shadow:0 8px 20px rgba(224,64,42,.3);transition:translate .15s,box-shadow .15s}
-.btn:hover{translate:0 -2px;box-shadow:0 10px 24px rgba(224,64,42,.36)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:60px;max-width:100%;padding:0 40px;border-radius:999px;background:var(--cta);color:#fff;text-decoration:none;font-weight:900;font-size:18px;box-shadow:0 8px 20px rgba(200,52,30,.3);transition:translate .15s,box-shadow .15s}
+.btn:hover{translate:0 -2px;box-shadow:0 10px 24px rgba(200,52,30,.36)}
 .btn:focus-visible{outline:3px solid var(--ai);outline-offset:4px}
 .cta-wrap .ok{display:block;margin-top:16px;font-weight:700;color:var(--ink-2)}
 
@@ -131,6 +140,8 @@ footer a{color:var(--shu)}
 @media (prefers-reduced-motion:reduce){
   .btn{transition:none}
   .btn:hover{translate:none}
+  /* source で静止画になっているので、止めるボタンは出さない */
+  .anim-toggle{display:none}
 }
 </style>
 </head>
@@ -153,6 +164,7 @@ footer a{color:var(--shu)}
     <figure class="photo wide">
       <picture><source media="(prefers-reduced-motion: reduce)" srcset="img/web/blog/2026-10-venue-visit/huddle-still.webp"><img src="img/web/blog/2026-10-venue-visit/huddle.webp" alt="成果報告会に参加した主催メンバーのオンラインの記念写真" width="800" height="453" loading="lazy"></picture>
       <figcaption>10月26日の成果報告会の記念写真。当日は15人が参加してくれました。</figcaption>
+      <button type="button" class="anim-toggle" data-state="playing"><svg class="lucide lucide-pause" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pause" aria-hidden="true"><rect x="14" y="4" width="4" height="16" rx="1" /> <rect x="6" y="4" width="4" height="16" rx="1" /></svg><svg class="lucide lucide-play" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="play" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3" /></svg><span class="anim-toggle-label">動きを止める</span></button>
     </figure>
 
     <h2>下見でやったこと</h2>
@@ -215,5 +227,16 @@ footer a{color:var(--shu)}
   <p><svg class="lucide lucide-mail" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mail" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2" /> <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg> <span>お問い合わせ</span> <a href="mailto:contact@pycon.jp">contact@pycon.jp</a></p>
   <p>主催：一般社団法人PyCon JP Association</p>
 </footer>
+<script>
+// 成果報告会の動く写真: ボタンで静止画と切り替える
+const huddleToggle = document.querySelector('.anim-toggle');
+const huddleImage = huddleToggle.closest('figure').querySelector('img');
+huddleToggle.addEventListener('click', () => {
+  const pausing = huddleToggle.dataset.state === 'playing';
+  huddleToggle.dataset.state = pausing ? 'paused' : 'playing';
+  huddleImage.src = pausing ? 'img/web/blog/2026-10-venue-visit/huddle-still.webp' : 'img/web/blog/2026-10-venue-visit/huddle.webp';
+  huddleToggle.querySelector('.anim-toggle-label').textContent = pausing ? '動かす' : '動きを止める';
+});
+</script>
 </body>
 </html>

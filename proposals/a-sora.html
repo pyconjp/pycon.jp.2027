@@ -42,12 +42,13 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* 夏空の配色: 白地に藍、アクセントは朱。枠は細い罫線と淡い影 */
 :root{
   --bg:#F4F7FB; --ink:#13213F; --ink-2:#4A5672; --card:#FFFFFF;
-  --ai:#163A8A; --shu:#E0402A; --ki:#D6E6FB; --matsu:#2E8B57;
-  --cta:#E0402A;
+  --ai:#163A8A; --shu:#C8341E; --ki:#D6E6FB; --matsu:#2E8B57;
+  --cta:#C8341E;
   --bd:1.5px solid #D6DFEC; --sh:0 8px 24px rgba(19,33,63,.07);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+/* 固定ヘッダーの下に、移動先やフォーカスが隠れないようにする */
+html{scroll-behavior:smooth;scroll-padding-top:80px}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
 .num{font-family:"Outfit",sans-serif}
@@ -59,14 +60,26 @@ a{color:inherit}
 .site-logo{display:flex;flex:none}
 .site-logo img{display:block;width:auto;height:34px;filter:drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 8px rgba(255,255,255,.8));transition:filter .2s}
 .site-hd.is-solid .site-logo img{filter:none}
+.hd-tools{display:flex;align-items:stretch;flex:none;gap:10px}
 .lang-toggle{display:flex;flex:none;padding:2px;border:1px solid currentColor;border-radius:999px}
+/* 動きを止めるボタン: 言語切り替えと同じ高さの丸いボタン */
+.motion-toggle{display:grid;place-items:center;flex:none;width:33px;min-height:24px;padding:0;border:1px solid currentColor;border-radius:999px;background:transparent;color:inherit;cursor:pointer;transition:background .2s,color .2s}
+.motion-toggle [data-lucide]{width:15px;height:15px;filter:drop-shadow(0 1px 2px var(--ink))}
+.site-hd.is-solid .motion-toggle [data-lucide]{filter:none}
+.motion-toggle[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.site-hd.is-solid .motion-toggle[aria-pressed="true"]{background:var(--ink);color:#fff}
+.motion-toggle[aria-pressed="true"] [data-lucide]{filter:none}
+.motion-toggle[aria-pressed="true"] .lucide-pause,.motion-toggle[aria-pressed="false"] .lucide-play{display:none}
 .lang-toggle button{border:0;border-radius:999px;background:transparent;color:inherit;font:700 12px/1.4 "Outfit",sans-serif;text-shadow:inherit;padding:5px 9px;cursor:pointer;transition:background .2s,color .2s}
 .lang-toggle button[aria-pressed="true"]{background:#fff;color:var(--ink);text-shadow:none}
 .site-hd.is-solid .lang-toggle button[aria-pressed="true"]{background:var(--ink);color:#fff}
 .site-hd a:focus-visible,.site-hd button:focus-visible{outline:2px solid currentColor;outline-offset:3px}
-#join,#teams,#flow{scroll-margin-top:80px}
+/* 白地では押下中のボタンの文字色が白になるので、枠は藍に固定する */
+.site-hd.is-solid a:focus-visible,.site-hd.is-solid button:focus-visible{outline-color:var(--ink)}
 @media (max-width:860px){
+  html{scroll-padding-top:60px}
   .site-hd{height:44px;padding:0 12px;gap:8px}
+  .hd-tools{gap:8px}
   .site-logo img{height:28px}
 }
 
@@ -79,10 +92,11 @@ a{color:inherit}
 .clouds picture,.shot .title picture{display:contents}
 .lockup{display:block;width:min(100%, calc(var(--lockup-max-height) * 1401 / 829));height:auto;filter:drop-shadow(0 0 3px rgba(255,255,255,.9)) drop-shadow(0 0 14px rgba(255,255,255,.75))}
 .hero-venue{display:inline-flex;align-items:center;gap:5px;font-size:14px;line-height:1.5;text-decoration:none;color:#fff;text-shadow:0 2px 3px #13213F,0 0 8px #13213F}
-.hero-venue:focus-visible{outline:3px solid var(--ai);outline-offset:4px}
+/* ヒーロー上のフォーカス枠: 雲の白と空の青のどちらでも見えるよう、白と藍の二重にする */
+.hero-venue:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 7px var(--ink)}
 .hero-venue [data-lucide]{filter:drop-shadow(0 2px 3px #13213F)}
 .hero-scroll{position:absolute;left:50%;bottom:24px;translate:-50% 0;z-index:4;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);color:var(--ink);box-shadow:0 3px 12px rgba(19,33,63,.18);text-decoration:none}
-.hero-scroll:focus-visible{outline:3px solid var(--ai);outline-offset:4px}
+.hero-scroll:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 7px var(--ink),0 3px 12px rgba(19,33,63,.18)}
 .hero-scroll [data-lucide]{width:24px;height:24px;animation:scroll-bounce 2s ease-in-out infinite}
 @keyframes scroll-bounce{0%,100%{transform:translateY(-3px)}50%{transform:translateY(3px)}}
 /* 縦のパララックスを雲の横流れ・切手の揺れと分離 */
@@ -113,7 +127,13 @@ a{color:inherit}
   .cloud-near,.cloud-far,.stamps img,.hero-scroll [data-lucide]{animation:none}
   .parallax,.stamp{translate:none}
   .stamps img{transition:none}
+  /* OS の設定で止まっているので、動きを止めるボタンは出さない */
+  .motion-toggle{display:none}
+  html{scroll-behavior:auto}
 }
+html.motion-paused{scroll-behavior:auto}
+/* ボタンで止めたときは、止めた位置から再開できるよう一時停止にする */
+.motion-paused .cloud-near,.motion-paused .cloud-far,.motion-paused .stamps img,.motion-paused .hero-scroll [data-lucide]{animation-play-state:paused}
 @media (max-width:860px){
   .shot{min-height:max(100svh,540px);background-position:88% bottom;--title-width:92vw;--lockup-max-height:32svh}
   /* 低い画面でも下の富士山が見えるよう、ロックアップの中心を40%に上げる */
@@ -135,6 +155,7 @@ a{color:inherit}
 .band p{margin:8px 0 14px;font-weight:900;letter-spacing:.06em}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:0 40px;border-radius:999px;background:var(--cta);color:#fff;text-decoration:none;font-weight:900;font-size:18px;border:4px solid var(--ink);box-shadow:var(--sh);transition:translate .15s,box-shadow .15s}
 .btn:hover{translate:-2px -2px;box-shadow:8px 8px 0 var(--ink)}
+.btn:focus-visible{outline:3px solid var(--ai);outline-offset:4px}
 /* 日時・場所の下の申し込みボタン */
 .hero-cta{max-width:100%;text-align:center}
 .band .sub{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:8px 18px;border-radius:999px;background:var(--ki);color:var(--ink);font-weight:700;font-size:14px;border:var(--bd)}
@@ -193,9 +214,13 @@ html[lang="en"] .team > [data-i18n]{max-width:100%;overflow-wrap:anywhere}
 .step b{display:block;font-size:17px}
 
 .chips{display:flex;flex-wrap:wrap;gap:12px}
-.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#fff;border:var(--bd);font-weight:700;font-size:14px;cursor:help;outline:none}
+.chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#fff;border:var(--bd);font-weight:700;font-size:14px;cursor:help}
 .chip [data-lucide]{color:var(--ai);font-size:18px}
 .chip a{color:var(--shu)}
+/* チップの中身を包むボタン: 標準の見た目を消す。チップの padding を打ち消して自分が持ち、チップ全体を押せるようにする */
+.chip-trigger{display:inline-flex;align-items:center;gap:8px;margin:-8px -16px;padding:8px 16px;border:0;border-radius:inherit;background:none;color:inherit;font:inherit;line-height:inherit;text-align:inherit;cursor:help}
+.chip-trigger:focus-visible{outline:3px solid var(--ai);outline-offset:3px}
+.chip a:focus-visible{outline:3px solid var(--ai);outline-offset:3px;border-radius:4px}
 
 .cta-wrap{text-align:center;margin-top:56px}
 .cta-wrap .ok{display:block;margin-top:16px;font-weight:700;color:var(--ink-2)}
@@ -229,10 +254,12 @@ html[lang="en"] .team > [data-i18n]{max-width:100%;overflow-wrap:anywhere}
   .news-list a:hover [data-lucide]{translate:none}
 }
 
-/* ツールチップ */
-[data-tip]{position:relative}
-[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,4px);width:max-content;max-width:240px;padding:10px 12px;border-radius:8px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;line-height:1.6;text-align:left;opacity:0;pointer-events:none;transition:.15s;z-index:10}
-[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+/* ツールチップ: 固定ヘッダーの下に隠れないようチップの下に出す。非表示の間はページ幅を広げないよう display:none */
+.tip{display:none;position:absolute;left:50%;top:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:min(240px,80vw);padding:10px 12px;border-radius:8px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;line-height:1.6;text-align:left;cursor:auto;z-index:10}
+/* チップとの間の隙間を透明な帯でつなぎ、ツールチップの上に移っても消えないようにする */
+.tip::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:10px}
+.chip:hover .tip,.chip:focus-within .tip,.chip.is-open .tip{display:block}
+.chip.is-dismissed .tip{display:none}
 
 footer{text-align:center;padding:40px 16px 56px;font-size:13px;color:var(--ink-2)}
 footer a{color:var(--shu)}
@@ -250,8 +277,10 @@ footer a{color:var(--shu)}
   .memories figure:first-child{grid-row:auto;grid-column:1/3;aspect-ratio:16/9}
 }
 /* 夏空案: 大漁旗案から流用したルールのうち、太い墨線とずらした影を外す */
-.btn{border:0;box-shadow:0 8px 20px rgba(224,64,42,.3)}
-.btn:hover{translate:0 -2px;box-shadow:0 10px 24px rgba(224,64,42,.36)}
+.btn{border:0;box-shadow:0 8px 20px rgba(200,52,30,.3)}
+.btn:hover{translate:0 -2px;box-shadow:0 10px 24px rgba(200,52,30,.36)}
+/* ヒーロー上の申し込みボタンも白と藍の二重の枠。ホバー中も枠が消えないよう .btn:hover の後に置く */
+.hero-cta:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 7px var(--ink),0 8px 20px rgba(200,52,30,.3)}
 .band{border:0}
 .band .sub{border:0;background:rgba(255,255,255,.16);color:#fff}
 .panel{border:var(--bd);box-shadow:var(--sh);border-radius:24px}
@@ -262,20 +291,22 @@ footer a{color:var(--shu)}
 .step:not(:last-child)::after{border-color:var(--ai)}
 .memories figcaption{background:#fff}
 .sec-hd h2{background:linear-gradient(transparent 64%,var(--ki) 64%)}
-/* 非表示のツールチップでページ幅が広がらないようにする */
-[data-tip]::after{display:none;max-width:min(240px,80vw)}
-[data-tip]:hover::after,[data-tip]:focus-visible::after{display:block}
 </style>
 </head>
 <body>
 <header class="site-hd">
   <a class="site-logo" href="#top"><img src="img/web/logo/header-title.webp" alt="PyCon JP 2027" data-i18n-alt="brand" width="302" height="102"></a>
-  <div class="lang-toggle" role="group" aria-label="言語切り替え" data-i18n-aria-label="languageLabel">
-    <button type="button" data-lang="ja" aria-pressed="true" aria-label="日本語" data-i18n-aria-label="japaneseLabel">JA</button>
-    <button type="button" data-lang="en" aria-pressed="false" aria-label="English">EN</button>
+  <div class="hd-tools">
+    <button type="button" class="motion-toggle" aria-pressed="false" aria-label="動きを止める" data-i18n-aria-label="pauseMotion" title="動きを止める" data-i18n-title="pauseMotion"><svg class="lucide lucide-pause" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pause" aria-hidden="true"><rect x="14" y="4" width="4" height="16" rx="1" /> <rect x="6" y="4" width="4" height="16" rx="1" /></svg><svg class="lucide lucide-play" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="play" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3" /></svg></button>
+    <div class="lang-toggle" role="group" aria-label="言語切り替え" data-i18n-aria-label="languageLabel">
+      <!-- 言語名はその言語で書き、表示中の言語によらず固定する -->
+      <button type="button" data-lang="ja" aria-pressed="true" aria-label="JA 日本語" lang="ja">JA</button>
+      <button type="button" data-lang="en" aria-pressed="false" aria-label="EN English" lang="en">EN</button>
+    </div>
   </div>
 </header>
 
+<main>
 <section class="hero" id="top">
   <div class="shot">
     <div class="clouds" aria-hidden="true">
@@ -369,11 +400,11 @@ footer a{color:var(--shu)}
 
     <h3 class="sub-hd"><span class="n">04</span><span data-i18n="requirements">参加にあたって</span></h3>
     <div class="chips">
-      <span class="chip" tabindex="0" data-tip="運営スタッフは無償のボランティアとしての参加です" data-i18n-tip="volunteerTip"><svg class="lucide lucide-heart-handshake" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="heart-handshake" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /> <path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66" /> <path d="m18 15-2-2" /> <path d="m15 18-2-2" /></svg><span data-i18n="volunteer">無償ボランティア</span></span>
-      <span class="chip" tabindex="0" data-tip="日本語で日常会話ができることが必要です" data-i18n-tip="japaneseTip"><svg class="lucide lucide-languages" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="languages" aria-hidden="true"><path d="m5 8 6 6" /> <path d="m4 14 6-6 2-3" /> <path d="M2 5h12" /> <path d="M7 2h1" /> <path d="m22 22-5-10-5 10" /> <path d="M14 18h6" /></svg><span data-i18n="japanese">日本語で日常会話</span></span>
-      <span class="chip" tabindex="0" data-tip="PyCon JP Code of Conduct への同意をお願いします" data-i18n-tip="conductTip"><svg class="lucide lucide-shield-check" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-check" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></svg><a href="https://www.pycon.jp/policies/code-of-conduct.html"><span data-i18n="conduct">行動規範</span></a><span data-i18n="conductAgree">に同意</span></span>
-      <span class="chip" tabindex="0" data-tip="連絡や相談にはSlackを使います" data-i18n-tip="slackTip"><svg class="lucide lucide-message-square" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-square" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg><span data-i18n="slack">連絡はSlack</span></span>
-      <span class="chip" tabindex="0" data-tip="開催当日の会場までの交通費・宿泊費は、自己負担が発生することもあります" data-i18n-tip="expensesTip"><svg class="lucide lucide-train-front" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="train-front" aria-hidden="true"><path d="M8 3.1V7a4 4 0 0 0 8 0V3.1" /> <path d="m9 15-1-1" /> <path d="m15 15 1-1" /> <path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z" /> <path d="m8 19-2 3" /> <path d="m16 19 2 3" /></svg><span data-i18n="expenses">交通・宿泊は自己負担の場合あり</span></span>
+      <span class="chip"><button type="button" class="chip-trigger" aria-describedby="tip-volunteer"><svg class="lucide lucide-heart-handshake" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="heart-handshake" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /> <path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66" /> <path d="m18 15-2-2" /> <path d="m15 18-2-2" /></svg><span data-i18n="volunteer">無償ボランティア</span></button><span class="tip" role="tooltip" id="tip-volunteer" data-i18n="volunteerTip">運営スタッフは無償のボランティアとしての参加です</span></span>
+      <span class="chip"><button type="button" class="chip-trigger" aria-describedby="tip-japanese"><svg class="lucide lucide-languages" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="languages" aria-hidden="true"><path d="m5 8 6 6" /> <path d="m4 14 6-6 2-3" /> <path d="M2 5h12" /> <path d="M7 2h1" /> <path d="m22 22-5-10-5 10" /> <path d="M14 18h6" /></svg><span data-i18n="japanese">日本語で日常会話</span></button><span class="tip" role="tooltip" id="tip-japanese" data-i18n="japaneseTip">日本語で日常会話ができることが必要です</span></span>
+      <span class="chip"><svg class="lucide lucide-shield-check" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-check" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></svg><a href="https://www.pycon.jp/policies/code-of-conduct.html" aria-describedby="tip-conduct"><span data-i18n="conduct">行動規範</span></a><span data-i18n="conductAgree">に同意</span><span class="tip" role="tooltip" id="tip-conduct" data-i18n="conductTip">PyCon JP Code of Conduct への同意をお願いします</span></span>
+      <span class="chip"><button type="button" class="chip-trigger" aria-describedby="tip-slack"><svg class="lucide lucide-message-square" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-square" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg><span data-i18n="slack">連絡はSlack</span></button><span class="tip" role="tooltip" id="tip-slack" data-i18n="slackTip">連絡や相談にはSlackを使います</span></span>
+      <span class="chip"><button type="button" class="chip-trigger" aria-describedby="tip-expenses"><svg class="lucide lucide-train-front" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="train-front" aria-hidden="true"><path d="M8 3.1V7a4 4 0 0 0 8 0V3.1" /> <path d="m9 15-1-1" /> <path d="m15 15 1-1" /> <path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z" /> <path d="m8 19-2 3" /> <path d="m16 19 2 3" /></svg><span data-i18n="expenses">交通・宿泊は自己負担の場合あり</span></button><span class="tip" role="tooltip" id="tip-expenses" data-i18n="expensesTip">開催当日の会場までの交通費・宿泊費は、自己負担が発生することもあります</span></span>
     </div>
 
     <div class="cta-wrap">
@@ -382,6 +413,7 @@ footer a{color:var(--shu)}
     </div>
   </div>
 </section>
+</main>
 
 <footer>
   <p><svg class="lucide lucide-mail" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mail" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2" /> <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg> <span data-i18n="contact">お問い合わせ</span> <a href="mailto:contact@pycon.jp">contact@pycon.jp</a></p>
@@ -394,7 +426,7 @@ const translations = {
     "pageTitle": "PyCon JP 2027 主催メンバー募集",
     "brand": "PyCon JP 2027",
     "languageLabel": "言語切り替え",
-    "japaneseLabel": "日本語",
+    "pauseMotion": "動きを止める",
     "teams": "チーム",
     "flow": "参加の流れ",
     "contact": "お問い合わせ",
@@ -479,7 +511,7 @@ const translations = {
     "pageTitle": "PyCon JP 2027 — Join the organizing team",
     "brand": "PyCon JP 2027",
     "languageLabel": "Language",
-    "japaneseLabel": "Japanese",
+    "pauseMotion": "Pause animations",
     "teams": "Teams",
     "flow": "How to join",
     "contact": "Contact",
@@ -570,7 +602,6 @@ function setLanguage(language, updateUrl = false) {
   });
   const attributes = {
     'data-i18n-aria-label': 'aria-label',
-    'data-i18n-tip': 'data-tip',
     'data-i18n-alt': 'alt',
     'data-i18n-title': 'title',
   };
@@ -608,6 +639,11 @@ window.addEventListener('scroll', updateHeader, { passive: true });
 updateHeader();
 
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+const motionToggle = document.querySelector('.motion-toggle');
+// OS の設定で動きを減らしているか、ヘッダーのボタンで止めているときは動かさない
+function motionReduced() {
+  return motionPreference.matches || motionToggle.getAttribute('aria-pressed') === 'true';
+}
 const parallaxLayers = [
   [document.querySelector('.parallax-near'), 0.35],
   [document.querySelector('.parallax-far'), 0.15],
@@ -635,7 +671,7 @@ function syncMotionPreference() {
     cancelAnimationFrame(parallaxFrame);
     parallaxFrame = null;
   }
-  if (motionPreference.matches) {
+  if (motionReduced()) {
     parallaxLayers.forEach(([layer]) => layer.style.removeProperty('--py'));
   } else {
     window.addEventListener('scroll', scheduleParallax, { passive: true });
@@ -655,7 +691,7 @@ let stampInterval = null;
 let stampSwapTimeout = null;
 
 function canSwapStamps() {
-  return stampsReady && heroVisible && !document.hidden && !motionPreference.matches;
+  return stampsReady && heroVisible && !document.hidden && !motionReduced();
 }
 
 function swapStamp() {
@@ -691,6 +727,13 @@ const heroObserver = new IntersectionObserver(([entry]) => {
 heroObserver.observe(document.querySelector('.hero'));
 document.addEventListener('visibilitychange', syncStampRotation);
 motionPreference.addEventListener('change', syncStampRotation);
+motionToggle.addEventListener('click', () => {
+  const paused = motionToggle.getAttribute('aria-pressed') !== 'true';
+  motionToggle.setAttribute('aria-pressed', String(paused));
+  document.documentElement.classList.toggle('motion-paused', paused);
+  syncMotionPreference();
+  syncStampRotation();
+});
 function preloadStamps() {
   stampPool = Array.from({ length: 12 }, (_, index) => {
     const image = new Image();
@@ -708,6 +751,45 @@ if (document.readyState === 'complete') {
 } else {
   window.addEventListener('load', preloadStamps, { once: true });
 }
+
+// 参加にあたってのツールチップ: ホバーとフォーカスに加え、タップで開閉し、Esc で隠す
+const chips = Array.from(document.querySelectorAll('.chip'));
+document.querySelectorAll('.chip-trigger').forEach(trigger => {
+  const chip = trigger.closest('.chip');
+  trigger.addEventListener('click', () => {
+    // 閉じるときはホバーやフォーカスが残っていても隠す
+    const opening = !chip.classList.contains('is-open');
+    // 開くときは、ほかのチップのツールチップを閉じる
+    if (opening) chips.forEach(other => other !== chip && other.classList.remove('is-open'));
+    chip.classList.toggle('is-open', opening);
+    chip.classList.toggle('is-dismissed', !opening);
+  });
+});
+// 閉じたツールチップは、ポインターとフォーカスの両方がチップから離れるまで隠したままにする
+chips.forEach(chip => {
+  chip.addEventListener('mouseleave', () => {
+    if (!chip.matches(':focus-within')) chip.classList.remove('is-dismissed');
+  });
+  chip.addEventListener('focusout', event => {
+    if (chip.contains(event.relatedTarget)) return;
+    chip.classList.remove('is-open');
+    if (!chip.matches(':hover')) chip.classList.remove('is-dismissed');
+  });
+});
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  chips.forEach(chip => {
+    if (chip.classList.contains('is-open') || chip.matches(':hover, :focus-within')) {
+      chip.classList.remove('is-open');
+      chip.classList.add('is-dismissed');
+    }
+  });
+});
+document.addEventListener('click', event => {
+  chips.forEach(chip => {
+    if (!chip.contains(event.target)) chip.classList.remove('is-open');
+  });
+});
 
 </script>
 </body>
